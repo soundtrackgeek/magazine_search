@@ -5,11 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Magazine Search</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Add GitHub-like markdown styling -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown.min.css" rel="stylesheet">
+    <!-- Add marked library for Markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         .highlight {
             background-color: #fde68a;
             padding: 0 2px;
             border-radius: 2px;
+        }
+        /* Add some basic styling for markdown content */
+        .markdown-body {
+            padding: 16px;
+            font-size: 14px;
+            line-height: 1.5;
+            background-color: white;
+        }
+        /* Ensure code blocks don't overflow */
+        .markdown-body pre {
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        /* Adjust table styling */
+        .markdown-body table {
+            display: block;
+            width: 100%;
+            overflow: auto;
         }
     </style>
 </head>
@@ -17,7 +40,7 @@
     <div class="container mx-auto px-4 py-8">
         <h1 class="text-4xl font-bold text-center mb-8 text-gray-800">Magazine Archive Search</h1>
         
-        <div class="max-w-2xl mx-auto">
+        <div class="max-w-3xl mx-auto">
             <div class="relative">
                 <input type="text" 
                        id="search-input" 
@@ -25,7 +48,7 @@
                        placeholder="Search magazines...">
             </div>
 
-            <div id="results" class="mt-6 space-y-4"></div>
+            <div id="results" class="mt-6 space-y-6"></div>
 
             <div id="loading" class="hidden mt-4 text-center">
                 <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
@@ -34,11 +57,32 @@
     </div>
 
     <script>
+        // Configure marked to enable GitHub Flavored Markdown
+        marked.setOptions({
+            gfm: true,
+            breaks: true,
+            headerIds: false,
+            mangle: false,
+            sanitize: false
+        });
+
         function highlightText(text, query) {
             if (!query) return text;
             const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            const regex = new RegExp(`(${escapedQuery})`, 'gi');
-            return text.replace(regex, '<span class="highlight">$1</span>');
+            const regex = new RegExp(escapedQuery, 'gi');
+            return text.replace(regex, '<span class="highlight">$&</span>');
+        }
+
+        function renderMarkdownWithHighlight(markdown, query) {
+            try {
+                // First highlight the text in the markdown
+                const highlightedMarkdown = highlightText(markdown, query);
+                // Then render the markdown
+                return marked.parse(highlightedMarkdown);
+            } catch (error) {
+                console.error('Error rendering markdown:', error);
+                return markdown;
+            }
         }
 
         let searchTimeout;
@@ -86,13 +130,24 @@
 
                         data.forEach(item => {
                             const div = document.createElement('div');
-                            div.className = 'bg-white p-4 rounded-lg shadow hover:shadow-md transition-shadow';
-                            const highlightedContent = highlightText(item.content, query);
-                            div.innerHTML = `
+                            div.className = 'bg-white rounded-lg shadow hover:shadow-md transition-shadow overflow-hidden';
+                            
+                            // Create header section
+                            const header = document.createElement('div');
+                            header.className = 'border-b border-gray-200 p-4';
+                            header.innerHTML = `
                                 <h3 class="font-semibold text-lg text-gray-800">${item.magazine}</h3>
                                 <div class="text-sm text-gray-600">Page ${item.page}</div>
-                                <p class="mt-2 text-gray-700">${highlightedContent}</p>
                             `;
+                            
+                            // Create content section with markdown
+                            const content = document.createElement('div');
+                            content.className = 'markdown-body';
+                            content.innerHTML = renderMarkdownWithHighlight(item.content, item.search_query);
+                            
+                            // Append both sections
+                            div.appendChild(header);
+                            div.appendChild(content);
                             resultsDiv.appendChild(div);
                         });
                     })
