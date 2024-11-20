@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magazine Search</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-4xl font-bold text-center mb-8 text-gray-800">Magazine Archive Search</h1>
+        
+        <div class="max-w-2xl mx-auto">
+            <div class="relative">
+                <input type="text" 
+                       id="search-input" 
+                       class="w-full px-4 py-3 rounded-lg shadow-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                       placeholder="Search magazines...">
+            </div>
+
+            <div id="results" class="mt-6 space-y-4"></div>
+
+            <div id="loading" class="hidden mt-4 text-center">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let searchTimeout;
+        const searchInput = document.getElementById('search-input');
+        const resultsDiv = document.getElementById('results');
+        const loadingDiv = document.getElementById('loading');
+
+        searchInput.addEventListener('input', function() {
+            const query = this.value.trim();
+            
+            // Clear previous timeout
+            clearTimeout(searchTimeout);
+            
+            if (query.length === 0) {
+                resultsDiv.innerHTML = '';
+                return;
+            }
+
+            // Show loading indicator
+            loadingDiv.classList.remove('hidden');
+            
+            // Debounce the search to prevent too many requests
+            searchTimeout = setTimeout(() => {
+                fetch(`/search?q=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        resultsDiv.innerHTML = '';
+                        loadingDiv.classList.add('hidden');
+                        
+                        if (data.length === 0) {
+                            resultsDiv.innerHTML = `
+                                <div class="text-center text-gray-600">
+                                    No results found for "${query}"
+                                </div>
+                            `;
+                            return;
+                        }
+
+                        data.forEach(item => {
+                            const div = document.createElement('div');
+                            div.className = 'bg-white p-4 rounded-lg shadow hover:shadow-md transition-shadow';
+                            div.innerHTML = `
+                                <h3 class="font-semibold text-lg text-gray-800">${item.magazine}</h3>
+                                <div class="text-sm text-gray-600">Page ${item.page}</div>
+                                <p class="mt-2 text-gray-700">${item.content}</p>
+                            `;
+                            resultsDiv.appendChild(div);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        loadingDiv.classList.add('hidden');
+                        resultsDiv.innerHTML = `
+                            <div class="text-center text-red-600">
+                                An error occurred while searching. Please try again.
+                            </div>
+                        `;
+                    });
+            }, 300);
+        });
+    </script>
+</body>
+</html>
