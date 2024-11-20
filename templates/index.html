@@ -49,14 +49,21 @@
             // Debounce the search to prevent too many requests
             searchTimeout = setTimeout(() => {
                 fetch(`/search?q=${encodeURIComponent(query)}`)
-                    .then(response => response.json())
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(err => {
+                                throw new Error(err.error || 'Server error occurred');
+                            });
+                        }
+                        return response.json();
+                    })
                     .then(data => {
                         resultsDiv.innerHTML = '';
                         loadingDiv.classList.add('hidden');
                         
                         if (data.length === 0) {
                             resultsDiv.innerHTML = `
-                                <div class="text-center text-gray-600">
+                                <div class="text-center text-gray-600 p-4">
                                     No results found for "${query}"
                                 </div>
                             `;
@@ -78,8 +85,8 @@
                         console.error('Error:', error);
                         loadingDiv.classList.add('hidden');
                         resultsDiv.innerHTML = `
-                            <div class="text-center text-red-600">
-                                An error occurred while searching. Please try again.
+                            <div class="text-center text-red-600 p-4">
+                                ${error.message || 'An error occurred while searching. Please try again.'}
                             </div>
                         `;
                     });
