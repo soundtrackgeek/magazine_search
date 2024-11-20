@@ -48,8 +48,12 @@ def search():
         
         results = []
         for item in MAGAZINES_DATA:
+            # Only search in the content, not in the magazine title
             if query in str(item['content']).lower():
-                results.append(item)
+                # Add the original query to help with highlighting
+                item_copy = item.copy()
+                item_copy['search_query'] = query
+                results.append(item_copy)
         
         logger.debug(f"Search query '{query}' returned {len(results)} results")
         return jsonify(results)

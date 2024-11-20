@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Magazine Search</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .highlight {
+            background-color: #fde68a;
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+    </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
     <div class="container mx-auto px-4 py-8">
@@ -27,6 +34,13 @@
     </div>
 
     <script>
+        function highlightText(text, query) {
+            if (!query) return text;
+            const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp(`(${escapedQuery})`, 'gi');
+            return text.replace(regex, '<span class="highlight">$1</span>');
+        }
+
         let searchTimeout;
         const searchInput = document.getElementById('search-input');
         const resultsDiv = document.getElementById('results');
@@ -73,10 +87,11 @@
                         data.forEach(item => {
                             const div = document.createElement('div');
                             div.className = 'bg-white p-4 rounded-lg shadow hover:shadow-md transition-shadow';
+                            const highlightedContent = highlightText(item.content, query);
                             div.innerHTML = `
                                 <h3 class="font-semibold text-lg text-gray-800">${item.magazine}</h3>
                                 <div class="text-sm text-gray-600">Page ${item.page}</div>
-                                <p class="mt-2 text-gray-700">${item.content}</p>
+                                <p class="mt-2 text-gray-700">${highlightedContent}</p>
                             `;
                             resultsDiv.appendChild(div);
                         });
