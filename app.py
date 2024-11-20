@@ -43,11 +43,17 @@ def home():
 def search():
     try:
         query = request.args.get('q', '').lower()
+        magazine_filter = request.args.get('magazine', 'All')
+        
         if not query:
             return jsonify([])
         
         results = []
         for item in MAGAZINES_DATA:
+            # Apply magazine filter if not "All"
+            if magazine_filter != "All" and not item['magazine'].startswith(magazine_filter):
+                continue
+                
             # Only search in the content, not in the magazine title
             if query in str(item['content']).lower():
                 # Add the original query to help with highlighting
@@ -55,7 +61,7 @@ def search():
                 item_copy['search_query'] = query
                 results.append(item_copy)
         
-        logger.debug(f"Search query '{query}' returned {len(results)} results")
+        logger.debug(f"Search query '{query}' with magazine filter '{magazine_filter}' returned {len(results)} results")
         return jsonify(results)
     except Exception as e:
         logger.error(f"Search error: {str(e)}")

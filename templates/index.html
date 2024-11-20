@@ -42,6 +42,14 @@
         <h1 class="text-4xl font-bold text-center mb-8 text-gray-800">Magazine Archive Search</h1>
         
         <div class="max-w-3xl mx-auto">
+            <div class="flex gap-4 mb-4">
+                <select id="magazine-filter" class="px-4 py-3 rounded-lg shadow-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <option value="All">All Magazines</option>
+                    <option value="Amiga Format">Amiga Format</option>
+                    <option value="Commodore Computing International">Commodore Computing International</option>
+                    <option value="Compute!'s Gazette">Compute!'s Gazette</option>
+                </select>
+            </div>
             <div class="relative">
                 <input type="text" 
                        id="search-input" 
@@ -93,6 +101,7 @@
 
         searchInput.addEventListener('input', function() {
             const query = this.value.trim();
+            const selectedMagazine = document.getElementById('magazine-filter').value;
             
             // Clear previous timeout
             clearTimeout(searchTimeout);
@@ -107,7 +116,12 @@
             
             // Debounce the search to prevent too many requests
             searchTimeout = setTimeout(() => {
-                fetch(`/search?q=${encodeURIComponent(query)}`)
+                const searchParams = new URLSearchParams({
+                    q: query,
+                    magazine: selectedMagazine
+                });
+                
+                fetch(`/search?${searchParams.toString()}`)
                     .then(response => {
                         if (!response.ok) {
                             return response.json().then(err => {
