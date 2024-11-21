@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, send_from_directory
 import pandas as pd
 import os
 import glob
@@ -19,12 +19,15 @@ def load_magazines():
         try:
             magazine_name = os.path.splitext(os.path.basename(file))[0]
             logger.debug(f"Reading file: {file}")
+            # Add cover image path
+            cover_path = f'/magazine_covers/{magazine_name}.jpg'
             df = pd.read_csv(file)
             for _, row in df.iterrows():
                 magazines_data.append({
                     'magazine': magazine_name,
                     'page': row['Page Number'],
-                    'content': row['Page Information']
+                    'content': row['Page Information'],
+                    'cover_image': cover_path
                 })
         except Exception as e:
             logger.error(f"Error reading file {file}: {str(e)}")
@@ -66,6 +69,11 @@ def search():
     except Exception as e:
         logger.error(f"Search error: {str(e)}")
         return jsonify({"error": str(e)}), 500
+
+# Add route to serve magazine covers
+@app.route('/magazine_covers/<path:filename>')
+def serve_cover(filename):
+    return send_from_directory('magazine_covers', filename)
 
 if __name__ == '__main__':
     app.run(debug=True)

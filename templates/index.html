@@ -35,6 +35,15 @@
             width: 100%;
             overflow: auto;
         }
+        .result-container {
+            display: flex;
+            gap: 1rem;
+        }
+        .cover-image {
+            width: 150px;
+            height: auto;
+            object-fit: contain;
+        }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
@@ -148,9 +157,22 @@
                             const div = document.createElement('div');
                             div.className = 'bg-white rounded-lg shadow hover:shadow-md transition-shadow overflow-hidden';
                             
+                            const resultContainer = document.createElement('div');
+                            resultContainer.className = 'result-container p-4';
+                            
+                            // Add cover image
+                            const coverImage = document.createElement('img');
+                            coverImage.src = item.cover_image;
+                            coverImage.alt = `${item.magazine} cover`;
+                            coverImage.className = 'cover-image';
+                            
+                            // Create content container
+                            const contentContainer = document.createElement('div');
+                            contentContainer.className = 'flex-1';
+                            
                             // Create header section
                             const header = document.createElement('div');
-                            header.className = 'border-b border-gray-200 p-4';
+                            header.className = 'border-b border-gray-200 mb-4';
                             header.innerHTML = `
                                 <h3 class="font-semibold text-lg text-gray-800">${item.magazine}</h3>
                                 <div class="text-sm text-gray-600">Page ${item.page}</div>
@@ -161,9 +183,12 @@
                             content.className = 'markdown-body';
                             content.innerHTML = renderMarkdownWithHighlight(item.content, item.search_query);
                             
-                            // Append both sections
-                            div.appendChild(header);
-                            div.appendChild(content);
+                            // Append all sections
+                            contentContainer.appendChild(header);
+                            contentContainer.appendChild(content);
+                            resultContainer.appendChild(coverImage);
+                            resultContainer.appendChild(contentContainer);
+                            div.appendChild(resultContainer);
                             resultsDiv.appendChild(div);
                         });
                     })
