@@ -1,7 +1,6 @@
 from flask import Flask, render_template, jsonify, request, send_from_directory
-import pandas as pd
-import os
-import glob
+from sqlalchemy import or_
+from database import SessionLocal, Magazine
 import logging
 
 # Set up logging
@@ -10,33 +9,12 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
-def load_magazines():
-    magazines_data = []
-    csv_files = glob.glob(os.path.join(os.path.dirname(__file__), 'magazines', '*.csv'))
-    logger.debug(f"Found CSV files: {csv_files}")
-    
-    for file in csv_files:
-        try:
-            magazine_name = os.path.splitext(os.path.basename(file))[0]
-            logger.debug(f"Reading file: {file}")
-            # Add cover image path
-            cover_path = f'/magazine_covers/{magazine_name}.jpg'
-            df = pd.read_csv(file)
-            for _, row in df.iterrows():
-                magazines_data.append({
-                    'magazine': magazine_name,
-                    'page': row['Page Number'],
-                    'content': row['Page Information'],
-                    'cover_image': cover_path
-                })
-        except Exception as e:
-            logger.error(f"Error reading file {file}: {str(e)}")
-    
-    logger.debug(f"Total entries loaded: {len(magazines_data)}")
-    return magazines_data
-
-# Load magazines data at startup
-MAGAZINES_DATA = load_magazines()
+def get_db():
+    db = SessionLocal()
+    try:
+        return db
+    finally:
+        db.close()
 
 @app.route('/')
 def home():
@@ -51,21 +29,32 @@ def search():
         if not query:
             return jsonify([])
         
+        db = get_db()
+        
+        # Build the query
+        search_query = db.query(Magazine)
+        
+        # Apply magazine filter if not "All"
+        if magazine_filter != "All":
+            search_query = search_query.filter(Magazine.magazine_name.startswith(magazine_filter))
+        
+        # Apply content search
+        search_query = search_query.filter(Magazine.content.ilike(f'%{query}%'))
+        
+        # Execute query and format results
         results = []
-        for item in MAGAZINES_DATA:
-            # Apply magazine filter if not "All"
-            if magazine_filter != "All" and not item['magazine'].startswith(magazine_filter):
-                continue
-                
-            # Only search in the content, not in the magazine title
-            if query in str(item['content']).lower():
-                # Add the original query to help with highlighting
-                item_copy = item.copy()
-                item_copy['search_query'] = query
-                results.append(item_copy)
+        for item in search_query.all():
+            results.append({
+                'magazine': item.magazine_name,
+                'page': item.page_number,
+                'content': item.content,
+                'cover_image': item.cover_image,
+                'search_query': query
+            })
         
         logger.debug(f"Search query '{query}' with magazine filter '{magazine_filter}' returned {len(results)} results")
         return jsonify(results)
+    
     except Exception as e:
         logger.error(f"Search error: {str(e)}")
         return jsonify({"error": str(e)}), 500
