@@ -11,6 +11,13 @@ A web-based application that allows you to search through magazine content effic
 - Page number references for search results
 - Web-based interface for easy access
 
+## Magazines
+
+- Amiga Format
+- Amiga Power
+- Byte
+- Commodore User
+
 ## Prerequisites
 
 - Python 3.8 or higher
@@ -20,21 +27,25 @@ A web-based application that allows you to search through magazine content effic
 ## Installation
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/yourusername/magazine_search.git
    cd magazine_search
    ```
 
 2. Install the required dependencies:
+
    ```bash
    pip install -r requirements.txt
    ```
 
 3. Install PostgreSQL:
+
    - On Windows, download and install PostgreSQL from https://www.postgresql.org/download/
    - On Linux/Mac, use your package manager to install PostgreSQL
 
 4. Set up PostgreSQL:
+
    - Create a database named `magazine_search`
    - Default configuration uses:
      - Username: postgres
@@ -51,7 +62,8 @@ A web-based application that allows you to search through magazine content effic
      ```
    - To use different settings, update `DATABASE_URL` in `database.py`
 
-4. Import magazine data:
+5. Import magazine data:
+
    ```bash
    # First time or to add new magazines
    python import_data.py
@@ -73,6 +85,7 @@ A web-based application that allows you to search through magazine content effic
 ## Usage
 
 1. Start the Flask application:
+
    ```bash
    python app.py
    ```
