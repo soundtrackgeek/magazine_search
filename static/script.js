@@ -73,7 +73,7 @@ searchInput.addEventListener('input', function() {
                 
                 const resultContent = `
                     <div class="search-result-title">
-                        <h2 class="text-xl font-semibold">${result.magazine} - Issue ${result.issue}</h2>
+                        <h2 class="text-xl font-semibold">${result.magazine}</h2>
                         <p class="text-sm">Page ${result.page}</p>
                     </div>
                     <div class="result-container">
