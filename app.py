@@ -1,5 +1,5 @@
 from flask import Flask, render_template, jsonify, request, send_from_directory
-from sqlalchemy import or_
+from sqlalchemy import text
 from database import SessionLocal, Magazine
 import logging
 
@@ -31,15 +31,22 @@ def search():
         
         db = get_db()
         
-        # Build the query
+        # Build the query using full-text search
         search_query = db.query(Magazine)
         
         # Apply magazine filter if not "All"
         if magazine_filter != "All":
             search_query = search_query.filter(Magazine.magazine_name.startswith(magazine_filter))
         
-        # Apply content search
-        search_query = search_query.filter(Magazine.content.ilike(f'%{query}%'))
+        # Apply full-text search
+        search_query = search_query.filter(
+            text("content_tsv @@ plainto_tsquery('english', :query)")
+        ).params(query=query)
+        
+        # Add ranking to sort by relevance
+        search_query = search_query.order_by(
+            text("ts_rank(content_tsv, plainto_tsquery('english', :query)) DESC")
+        ).params(query=query)
         
         # Execute query and format results
         results = []

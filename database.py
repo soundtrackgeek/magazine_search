@@ -1,6 +1,7 @@
-from sqlalchemy import create_engine, Column, Integer, String, Text, Index
+from sqlalchemy import create_engine, Column, Integer, String, Text, Index, text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.dialects.postgresql import TSVECTOR
 
 DATABASE_URL = "postgresql://postgres:postgres@localhost:5432/magazine_search"
 
@@ -17,10 +18,14 @@ class Magazine(Base):
     page_number = Column(Integer)
     content = Column(Text)
     cover_image = Column(String)
+    content_tsv = Column(TSVECTOR)
 
-    # Create a GiST index for faster text search
     __table_args__ = (
-        Index('idx_content_pattern_ops', 'content', postgresql_ops={'content': 'text_pattern_ops'}),
+        Index(
+            'idx_content_fts',
+            'content_tsv',
+            postgresql_using='gin'
+        ),
     )
 
 def get_db():

@@ -3,6 +3,7 @@ import os
 import glob
 from database import SessionLocal, Magazine, engine, Base
 import logging
+from sqlalchemy import text
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -10,7 +11,17 @@ logger = logging.getLogger(__name__)
 
 def import_magazines():
     # Create tables
+    Base.metadata.drop_all(bind=engine)  # Drop existing tables
     Base.metadata.create_all(bind=engine)
+    
+    # Create trigger for automatic tsvector updates
+    with engine.connect() as conn:
+        conn.execute(text("""
+            CREATE TRIGGER magazines_tsvector_update BEFORE INSERT OR UPDATE
+            ON magazines FOR EACH ROW EXECUTE FUNCTION
+            tsvector_update_trigger(content_tsv, 'pg_catalog.english', content);
+        """))
+        conn.commit()
     
     # Get database session
     db = SessionLocal()
