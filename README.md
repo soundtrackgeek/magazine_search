@@ -17,6 +17,8 @@ A web-based application that allows you to search through magazine content effic
 - Amiga Power
 - Byte
 - Commodore User
+- PC Gamer US
+- Zzap64
 
 ## Prerequisites
 
