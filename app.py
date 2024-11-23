@@ -20,14 +20,21 @@ def get_db():
 def home():
     return render_template('index.html')
 
-@app.route('/search')
+@app.route('/search', methods=['GET', 'POST'])
 def search():
     try:
-        query = request.args.get('q', '').lower()
-        magazine_filter = request.args.get('magazine', 'All')
+        if request.method == 'POST':
+            data = request.get_json()
+            if data is None:
+                return jsonify({"error": "Invalid JSON data"}), 400
+            query = data.get('query', '').lower()
+            magazine_filter = data.get('magazine', 'All')
+        else:
+            query = request.args.get('q', '').lower()
+            magazine_filter = request.args.get('magazine', 'All')
         
         if not query:
-            return jsonify([])
+            return jsonify({'results': []})
         
         db = get_db()
         
@@ -60,7 +67,7 @@ def search():
             })
         
         logger.debug(f"Search query '{query}' with magazine filter '{magazine_filter}' returned {len(results)} results")
-        return jsonify(results)
+        return jsonify({'results': results})
     
     except Exception as e:
         logger.error(f"Search error: {str(e)}")
