@@ -10,6 +10,11 @@ A web-based application that allows you to search through magazine content effic
 - Page number references for search results
 - Web-based interface for easy access
 
+## Magazines
+
+- Amiga Power
+- Commodore User
+
 ## Prerequisites
 
 - Python 3.8 or higher
