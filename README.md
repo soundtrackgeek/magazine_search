@@ -4,20 +4,17 @@ A web-based application that allows you to search through magazine content effic
 
 ## Features
 
-- Full-text search across multiple magazines
+- Full-text search across multiple magazines using PostgreSQL
+- Relevance-based search results
 - Magazine cover image display
 - Filter search results by specific magazines
 - Page number references for search results
 - Web-based interface for easy access
 
-## Magazines
-
-- Amiga Power
-- Commodore User
-
 ## Prerequisites
 
 - Python 3.8 or higher
+- PostgreSQL 12 or higher
 - pip (Python package installer)
 
 ## Installation
@@ -33,9 +30,29 @@ A web-based application that allows you to search through magazine content effic
    pip install -r requirements.txt
    ```
 
+3. Set up PostgreSQL:
+   - Create a database named `magazine_search`
+   - Default configuration uses:
+     - Username: postgres
+     - Password: postgres
+     - Host: localhost
+     - Port: 5432
+   - To use different settings, update `DATABASE_URL` in `database.py`
+
+4. Import magazine data:
+   ```bash
+   # First time or to add new magazines
+   python import_data.py
+
+   # To completely rebuild the database
+   python import_data.py --force-reimport
+   ```
+
 ## Project Structure
 
 - `app.py` - Main Flask application file
+- `database.py` - Database configuration and models
+- `import_data.py` - Data import script
 - `magazines/` - Directory containing CSV files with magazine content
 - `magazine_covers/` - Directory containing magazine cover images
 - `templates/` - HTML templates for the web interface
@@ -53,11 +70,26 @@ A web-based application that allows you to search through magazine content effic
 3. Use the search bar to find content across magazines
    - Enter your search query
    - Optionally filter by specific magazine
+   - Results are sorted by relevance
    - View results with page numbers and magazine covers
+
+## Adding New Magazines
+
+1. Add new magazine CSV files to the `magazines/` directory
+2. Add corresponding cover images to `magazine_covers/`
+3. Run the import script:
+   ```bash
+   python import_data.py
+   ```
+   - This will only import new magazines
+   - Existing magazines will be skipped
+   - Use `--force-reimport` flag to rebuild everything
 
 ## Dependencies
 
 - Flask 2.3.3 - Web framework
+- SQLAlchemy 2.0.23 - Database ORM
+- psycopg2-binary 2.9.9 - PostgreSQL adapter
 - Pandas 2.0.3 - Data handling
 
 ## License
