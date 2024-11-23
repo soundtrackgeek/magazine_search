@@ -30,13 +30,25 @@ A web-based application that allows you to search through magazine content effic
    pip install -r requirements.txt
    ```
 
-3. Set up PostgreSQL:
+3. Install PostgreSQL:
+   - On Windows, download and install PostgreSQL from https://www.postgresql.org/download/
+   - On Linux/Mac, use your package manager to install PostgreSQL
+
+4. Set up PostgreSQL:
    - Create a database named `magazine_search`
    - Default configuration uses:
      - Username: postgres
      - Password: postgres
      - Host: localhost
      - Port: 5432
+   - On Windows, use the following command to create the database:
+     ```bash
+     psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE magazine_search;"
+     ```
+   - On Linux/Mac, use the following command:
+     ```bash
+     sudo -u postgres createdb -h localhost -p 5432 magazine_search
+     ```
    - To use different settings, update `DATABASE_URL` in `database.py`
 
 4. Import magazine data:
