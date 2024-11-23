@@ -84,34 +84,127 @@ The overall tone of the advertisement is playful and humorous, reflecting the st
 
 **Overall:** The page is packed with information about Amiga games, developers, and the overall Amiga scene.  The layout is typical of a magazine from that era, with a mix of text, images, and advertisements.  The presence of game previews, reviews, and interviews suggests a focus on providing in-depth coverage of the Amiga gaming community.  There are also several contests and giveaways.
 "
-5,"Error: finish_reason: RECITATION
-safety_ratings {
-  category: HARM_CATEGORY_HATE_SPEECH
-  probability: NEGLIGIBLE
-}
-safety_ratings {
-  category: HARM_CATEGORY_DANGEROUS_CONTENT
-  probability: NEGLIGIBLE
-}
-safety_ratings {
-  category: HARM_CATEGORY_HARASSMENT
-  probability: NEGLIGIBLE
-}
-safety_ratings {
-  category: HARM_CATEGORY_SEXUALLY_EXPLICIT
-  probability: NEGLIGIBLE
-}
-citation_metadata {
-  citation_sources {
-    start_index: 397
-    end_index: 827
-  }
-  citation_sources {
-    start_index: 1119
-    end_index: 1279
-    uri: ""https://www.amigacomputers.com/pdf-amiga-power-magazine-issue-07/""
-  }
-}
+5,"The page is from the November 1991 issue of AMIGA POWER magazine. It features game reviews, a list of games reviewed in the issue, and a section about the contents of the magazine's cover disk.
+
+**Page Header:**
+
+The top of the page has a red banner that says ''OVER 300 GAMES RATED IN EVERY ISSUE!''
+
+**Games Reviewed This Issue:**
+
+On the left side of the page is a section titled ''GAMES REVIEWED THIS ISSUE'' with a sub-heading ''NOVEMBER''. The games are categorized into ''FULL PRICE'', ''BUDGET'', ''COMPILATIONS'', and ''PUBLIC DOMAIN''. Each game has its name listed followed by a page number.
+
+**Full Price Games:**
+
+*   Altered Destiny - 84
+*   The Blues Brothers - 46
+*   Boston Bomb Club - 87
+*   Brain Blasters - 90
+*   Death Knights of Krynn - 87
+*   Formula One Grand Prix - 24
+*   Hero Quest: Return of the Witchlord - 89
+*   Hudson Hawk - 28
+*   King's Quest V - 38
+*   Last Ninja 3 - 36
+*   Lotus Turbo Challenge II - 32
+*   Mega Twins - 30
+*   MIG 29M Super Fulcrum - 42
+*   OutRun Europa - 44
+*   Pit-Fighter - 90
+*   Rise of the Dragon - 38
+*   Robocod - 34
+*   Rolling Ronny - 84
+*   Stratego - 85
+*   Their Finest Missions - 84
+*   Wild Wheels - 89
+*   Zone Warrior - 89
+
+**Budget Games:**
+
+*   Archipelagos - 96
+*   Bad Company - 97
+*   Bubble Bobble - 95
+*   Cabal - 95
+*   Eye of Horus - 96
+*   Magicland Dizzy - 96
+*   Prospector in the Mazes - 96
+*   Of Xor - 96
+*   Shinobi - 96
+*   Star Goose - 96
+*   Star Blaze - 97
+*   Star Ray - 96
+
+**Compilations:**
+
+*   Magnetic Scrolls Collection - 95
+*   Super Sim Pack - 97
+
+**Public Domain:**
+
+*   Asteroids - 99
+*   Crystal Caverns - 100
+*   Destination Moonbase - 100
+*   Dizzy Lizzy - 100
+*   Go Looby - 100
+*   Humdinger 41 - 100
+*   Jumper - 99
+*   Phase II - 99
+*   Raphael's Revenge - 99
+*   Squamble - 99
+*   Super Twintris - 99
+*   Tripppin - 100
+
+**Game Previews:**
+
+On the left side of the page, there are small screenshots and descriptions of some of the games reviewed:
+
+*   **LOTUS TURBO CHALLENGE II:** ''Bigger, faster... and four player!'' Page 32. The screenshot shows a race car on a track.
+*   **RISE OF THE DRAGON:** ''First person adventuring, Blade Runner-style'' Page 38. The screenshot shows a character in a futuristic setting.
+*   **MIG 29M SUPER FULCRUM:** ''Deadly accurate, but is it a game?'' Page 42. The screenshot shows a cockpit view from a fighter jet.
+*   **OUTRUN EUROPA:** ''If you thought racing across America was naughty...'' Page 44. The screenshot shows a motorcycle racing on a highway.
+*   **THE BLUES BROTHERS:** ''Everybody needs somebody to love, but if you don't have anyone, a game might do...'' Page 46. The screenshot shows a platform game level.
+
+**Disk Seven Section:**
+
+On the right side of the page, there's a section titled ''disk SEVEN'' with a large number ''5'' next to it. This section contains a story and reviews of the games included on the magazine's cover disk.
+
+**Story:**
+
+The story is about a character named Gerald Sick who is force-feeding bricks to Billy the Badger. Other characters like Sammy Squirrel and Beryl Hedgehog appear and comment on the situation. The story ends with Beryl saying, ''Ah well, he also hates badgers.'' This story seems to be a humorous introduction to the disk content.
+
+**And This is Disk Seven:**
+
+This section reviews the games on the cover disk:
+
+*   **LEANDER:**
+    *   The review states that Leander (meaning ''Lion man'' in Latin) is a big new project from Psygnosis.
+    *   It's described as a 22-level monster set over three worlds where the player has to save a princess from the evil Lord Thanatos.
+    *   The game involves battling against hideous creatures, and the review mentions that this version gives the player the first sizeable level to hack through.
+    *   A small screenshot of the game is included, showing a green-armored character.
+
+*   **VIDEO KID:**
+    *   This game is from Twilight & Gremlin stars and is described as another precocious kid in an unlikely surreal scenario.
+    *   The review highlights the ''little love's fallen into his video'' aspect and mentions that the player must battle through five worlds based on classic movie styles.
+    *   It's a playable demo with 200 odd screens.
+    *   The screenshot shows a character in a cowboy outfit standing in front of a saloon-like building with the word ''LOON'' above the door.
+
+*   **SUPER TWINTRIS:**
+    *   This is described as the first time anyone has come close to emulating the Tetris gameplay of the Game Boy, Spectrum, or coin-op versions.
+    *   The Public Domain (PD) effort is praised for its full-price attempts and features, including a simultaneous two-player mode like the arcade machine's.
+    *   The review mentions a selection of tunes and difficulty levels, calling it the icing on the PD cake and stating it's all free.
+    *   The screenshot shows a colorful Tetris-like game in progress.
+
+*   **ASTEROIDS:**
+    *   The review calls Asteroids the greatest arcade game of all time and notes that it's seen dozens of attempts made to capture its glory in the PD sector.
+    *   This version is considered the real thing, the definitive article, and the absolute business, with the bona fide coin-op experience.
+    *   The team behind it are praised for their experience on the case for days and for not having found a single difference between this version and the arcade original.
+    *   The review concludes by saying that if the reader liked Amigoids, they will change their life.
+    *   The screenshot shows a simple vector-based representation of the Asteroids game.
+
+**Final Note:**
+
+At the bottom of the page, there's a call to action: ''What's that? You want to know MORE? What do you think this is, the Encyclopaedia Britannica or something? Oh, alright then, turn the page for the complete lowdown...'' with an arrow pointing to the right, indicating the reader should turn the page for more information. The bottom right corner also indicates the magazine is ''AMIGA POWER'' and the issue is from ''NOVEMBER 1991''.
+
 "
 6,"This page is a magazine article, likely from a gaming magazine, featuring a review and information about the video game ""Leander.""
 

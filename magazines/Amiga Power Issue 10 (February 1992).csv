@@ -99,30 +99,102 @@ The page also includes contact information for ordering the games, along with ot
 
 **Overall Impression:** The page is a typical gaming magazine layout from the 1990s, focusing on reviews, previews, and news related to Amiga games.  The style is informative and engaging, with a focus on the technical aspects of the games and the broader gaming community.
 "
-5,"Error: finish_reason: RECITATION
-safety_ratings {
-  category: HARM_CATEGORY_HATE_SPEECH
-  probability: NEGLIGIBLE
-}
-safety_ratings {
-  category: HARM_CATEGORY_DANGEROUS_CONTENT
-  probability: NEGLIGIBLE
-}
-safety_ratings {
-  category: HARM_CATEGORY_HARASSMENT
-  probability: NEGLIGIBLE
-}
-safety_ratings {
-  category: HARM_CATEGORY_SEXUALLY_EXPLICIT
-  probability: NEGLIGIBLE
-}
-citation_metadata {
-  citation_sources {
-    start_index: 538
-    end_index: 675
-    uri: ""https://www.amigacomputers.com/pdf-amiga-power-magazine-issue-10/""
-  }
-}
+5,"The page is from the February 1992 issue of AMIGA POWER magazine. It features game reviews, information about the magazine's monthly disk, and subscription details.
+
+**Page Header:**
+
+The top of the page has a red banner that reads ''OVER 300 GAMES RATED IN EVERY ISSUE!''
+
+**Left Side:**
+
+The left side of the page has several sections:
+
+*   **Game Previews:** There are four small sections with screenshots and brief descriptions of upcoming games:
+    *   **WWF:** The text says, ''Nagasaki's got the salt! He's got the SALT! Are you blind, ref? Page 32''. The screenshot shows a wrestling game.
+    *   **Tip Off:** The text says, ''Basketball gets Kick Off-ised. (Well, what did you expect?) Page 42''. The screenshot shows a basketball game.
+    *   **Hearts of China:** The text says, ''Or High Road To China, the game... Page 44''. The screenshot shows an adventure game with cartoon-style graphics.
+    *   **Space Ace II:** The text says, ''Gorgeous graphics but, well... (you know the drill by now) Page 46''. The screenshot shows a space adventure game with cartoon-style graphics.
+*   **Subs:** A small section at the bottom left advertises subscriptions with the text ''... and more! Back issues, T-shirts, binders - they're all here! (How can you live without them?) Page 120''.
+
+**Center:**
+
+The center of the page is dominated by a large section titled ''GAMES REVIEWED THIS ISSUE FEBRUARY''. This section is divided into several categories based on price:
+
+*   **Full Price:**
+    *   Another World - 28
+    *   Breach 2 (Enhanced) - 78
+    *   Che: Guerilla in Bolivia - 78
+    *   Cisco Heat - 78
+    *   Elvira (The Arcade Game) - 84
+    *   Falling Jewels - 79
+    *   Fantastic Voyage - 79
+    *   The Godfather - 36
+    *   Golden Eagle - 79
+    *   Graeme Souness Vector Soccer - 80
+    *   Great Napoleonic Battles - 80
+    *   Hearts of China - 44
+    *   Home Alone - 84
+    *   Kid Gloves 2 - 80
+    *   Leander - 34
+    *   Medieval Warriors - 82
+    *   Mercenary III - 38
+    *   The Neverending Story II - 82
+    *   Populous World Editor - 82
+    *   RoboCop 3 - 22
+    *   Rugby Coach - 82
+    *   Space Ace II - 46
+    *   Steve McQueen West -
+    *   Phaser - 83
+    *   Tilt - 84
+    *   Tip Off - 42
+    *   Thunder Burner - 83
+    *   Wolfchild - 26
+    *   WWF Wrestlemania - 32
+*   **Budget:**
+    *   Escape From The Planet Of The Robot Monsters - 87
+    *   Menace - 86
+    *   Spellbound - 87
+*   **Compilations:**
+    *   Air Land Sea - 86
+    *   4 Wheel Drive - 87
+*   **Public Domain:**
+    *   Cyadonia - 92
+    *   Dark Things - 91
+    *   Humdinger - The Revenge - 92
+    *   Nu - 91
+    *   Tron 2000 - 91
+    *   Tsch - 91
+
+**Right Side:**
+
+The right side of the page has several sections:
+
+*   **Disk Ten:** This section describes the magazine's monthly disk, which features three arcade game blasters. The text emphasizes that it's a treat for fans of fast-reaction games and encourages readers to try it out. It also mentions three games included on the disk:
+    *   **Mr. Wobbly Leg Versus The Invaders From Space...**
+    *   **Raid**
+    *   **Squamble**
+    The section also includes a picture of the disk, which is labeled ''AMIGA POWER''.
+*   **And This Is Disk Ten:** This section provides more details about the games on the disk.
+    *   **Mr. Wobbly Leg:** This game is described as a new slant on the classic Space Invaders theme, with the best entry getting the chance of gainful employment with top programmers Bullfrog. The text also mentions that it's an apocalyptic epic featuring a character who's sure to be the nation's next big cult hero after Bart Simpson and Sonic The Hedgehog - Mr. Wobbly Leg. A screenshot of the game is included, showing a Space Invaders-style setup.
+    *   **Raid:** This game is described as a shoot-'em-up where the player controls a Squamble. The text asks if the player is feeling cocky and encourages them to try the game. It also mentions that the player will sort out the men from the boys, the women from the girls, the cats from the kittens, the wolves from the sheep. A screenshot of the game is included, showing a top-down view of a building.
+    *   **Squamble:** This game is described as an action-packed tribute to older arcade games like 'Gorf' and 'Pleiades'. The text mentions that it was called 'Scramble' in the past when men were men, women were women, and arcade games were called things like 'Gorf' and 'Pleiades'. A screenshot of the game is included, showing a side-scrolling spaceship shooter.
+*   **Disk Returns:** This small section at the bottom provides information about returning faulty disks. It gives the address of Disk Copy Labs plc and instructs readers to allow up to 28 days for a replacement.
+
+**Additional Details:**
+
+*   The page number ''5'' is visible in the top right corner.
+*   The magazine's logo is not directly visible, but the text ''AMIGA POWER'' appears multiple times.
+*   The date ''FEBRUARY 1992'' is printed at the bottom right corner.
+*   A small arrow symbol is also present in the bottom right corner.
+*   The overall style of the page is colorful and busy, with a mix of text, screenshots, and graphics.
+*   The review scores are prominently displayed next to each game title in the ''GAMES REVIEWED THIS ISSUE FEBRUARY'' section. The scores range from 22 to 92, indicating a wide variety of game quality.
+*   The language used in the reviews and descriptions is informal and enthusiastic, reflecting the magazine's target audience of Amiga gamers.
+*   The page layout is somewhat cluttered, but it manages to pack a lot of information into a single page.
+*   The focus of the page is clearly on providing game reviews and promoting the magazine's monthly disk.
+*   The inclusion of public domain games suggests that the magazine caters to a broad range of gamers, including those on a budget.
+*   The subscription advertisement indicates that the magazine is trying to build a loyal readership.
+*   The overall impression is that AMIGA POWER was a lively and informative magazine for Amiga enthusiasts.
+
 "
 6,"This page is from a magazine, likely *Amiga Power*, and features an article about the game ""Mr. Wobbly Leg Versus the Invaders from Space.""  The article is a combination of instructions, gameplay information, and a review.
 
