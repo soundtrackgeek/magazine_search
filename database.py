@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, Text
+from sqlalchemy import create_engine, Column, Integer, String, Text, Index
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
@@ -18,11 +18,10 @@ class Magazine(Base):
     content = Column(Text)
     cover_image = Column(String)
 
-    # Add full-text search index
-    __table_args__ = {
-        'postgresql_using': 'btree',
-        'postgresql_ops': {'content': 'text_pattern_ops'}
-    }
+    # Create a GiST index for faster text search
+    __table_args__ = (
+        Index('idx_content_pattern_ops', 'content', postgresql_ops={'content': 'text_pattern_ops'}),
+    )
 
 def get_db():
     db = SessionLocal()
