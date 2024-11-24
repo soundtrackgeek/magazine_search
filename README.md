@@ -18,6 +18,7 @@ A web-based application that allows you to search through magazine content effic
 - Amiga Power
 - Byte
 - Commodore User
+- Computer & Video Games
 - Crash
 - PC Format
 - PC Gamer US
