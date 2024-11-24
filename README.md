@@ -20,6 +20,7 @@ A web-based application that allows you to search through magazine content effic
 - Commodore User
 - Computer & Video Games
 - Crash
+- Dreamcast Magazine
 - Edge
 - PC Format
 - PC Gamer US
