@@ -31,7 +31,7 @@ def setup_database():
             logger.info("Created tsvector update trigger")
 
 def import_magazines(force_reimport=False):
-    """Import magazines from CSV files
+    """Import magazines from CSV files and update existing entries if content has changed
     
     Args:
         force_reimport (bool): If True, drop and recreate all tables
@@ -50,48 +50,81 @@ def import_magazines(force_reimport=False):
         logger.info(f"Found {len(csv_files)} CSV files to process")
         
         imported_count = 0
+        updated_count = 0
         skipped_count = 0
         error_count = 0
         
         for file in csv_files:
             try:
                 magazine_name = os.path.splitext(os.path.basename(file))[0]
-                
-                # Check if any pages from this magazine already exist
-                if not force_reimport and db.query(exists().where(Magazine.magazine_name == magazine_name)).scalar():
-                    logger.info(f"Skipping {magazine_name} - already imported")
-                    skipped_count += 1
-                    continue
-                
-                logger.info(f"Importing {magazine_name}")
+                logger.info(f"Processing {magazine_name}")
                 
                 # Add cover image path
                 cover_path = f'/magazine_covers/{magazine_name}.jpg'
                 df = pd.read_csv(file)
                 
-                # Import each row
+                # Get existing magazine entries
+                existing_entries = {
+                    (entry.page_number, entry.content): entry 
+                    for entry in db.query(Magazine).filter(Magazine.magazine_name == magazine_name)
+                }
+                
+                # Track processed pages to identify deleted pages
+                processed_pages = set()
+                
+                # Import/update each row
                 for _, row in df.iterrows():
-                    magazine_entry = Magazine(
-                        magazine_name=magazine_name,
-                        page_number=row['Page Number'],
-                        content=row['Page Information'],
-                        cover_image=cover_path
+                    page_number = row['Page Number']
+                    content = row['Page Information']
+                    key = (page_number, content)
+                    processed_pages.add(page_number)
+                    
+                    if key in existing_entries:
+                        # Content hasn't changed, skip
+                        skipped_count += 1
+                        continue
+                    
+                    # Check if page exists but content is different
+                    existing_page = next(
+                        (entry for (p, _), entry in existing_entries.items() if p == page_number),
+                        None
                     )
-                    db.add(magazine_entry)
+                    
+                    if existing_page:
+                        # Update existing page
+                        existing_page.content = content
+                        updated_count += 1
+                        logger.info(f"Updated {magazine_name} page {page_number}")
+                    else:
+                        # Add new page
+                        magazine_entry = Magazine(
+                            magazine_name=magazine_name,
+                            page_number=page_number,
+                            content=content,
+                            cover_image=cover_path
+                        )
+                        db.add(magazine_entry)
+                        imported_count += 1
+                
+                # Remove pages that no longer exist in the CSV
+                for (page_number, _), entry in existing_entries.items():
+                    if page_number not in processed_pages:
+                        db.delete(entry)
+                        logger.info(f"Deleted {magazine_name} page {page_number} - no longer in CSV")
                 
                 # Commit after each file
                 db.commit()
-                logger.info(f"Successfully imported {magazine_name}")
-                imported_count += 1
+                logger.info(f"Successfully processed {magazine_name}")
                 
             except Exception as e:
-                logger.error(f"Error importing file {file}: {str(e)}")
+                logger.error(f"Error processing file {file}: {str(e)}")
                 db.rollback()
                 error_count += 1
         
         logger.info(f"""Import complete:
-            - {imported_count} magazines imported
-            - {skipped_count} magazines skipped (already existed)
+            - {imported_count} new pages imported
+            - {updated_count} pages updated
+            - {skipped_count} pages unchanged
             - {error_count} errors""")
         
     except Exception as e:
