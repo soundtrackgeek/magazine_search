@@ -30,6 +30,7 @@ let searchTimeout;
 const searchInput = document.getElementById('search-input');
 const resultsDiv = document.getElementById('results');
 const loadingDiv = document.getElementById('loading');
+const resultsCountDiv = document.getElementById('results-count');
 
 searchInput.addEventListener('input', function() {
     const query = this.value.trim();
@@ -63,8 +64,13 @@ searchInput.addEventListener('input', function() {
             
             if (data.results.length === 0) {
                 resultsDiv.innerHTML = '<p class="text-center text-gray-500">No results found</p>';
+                resultsCountDiv.classList.add('hidden');
                 return;
             }
+            
+            // Display results count
+            resultsCountDiv.classList.remove('hidden');
+            resultsCountDiv.textContent = `Found ${data.results.length} result${data.results.length === 1 ? '' : 's'}`;
             
             // Display results
             data.results.forEach(result => {
