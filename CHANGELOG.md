@@ -4,6 +4,15 @@ All notable changes to the Magazine Search project will be documented in this fi
 
 ## [Latest]
 
+### 2024-11-26
+- Added boolean operators (AND, NOT) to search functionality
+- Added pagination to search results with smooth scrolling
+- Added GamesMaster magazine
+- Added import script for Elasticsearch
+- Improved security with .env file for Elasticsearch password
+- Fixed search result highlighting
+- Updated documentation and dependencies
+
 ### 2024-11-25
 - Added Family Computing magazine, updated readme and dropdown
 
