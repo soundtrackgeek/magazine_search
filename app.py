@@ -27,11 +27,13 @@ def search():
             data = request.get_json()
             if data is None:
                 return jsonify({"error": "Invalid JSON data"}), 400
-            query = data.get('query', '').lower()
+            
+            # Get the original query without converting to lowercase
+            query = data.get('query', '')
             magazine_filter = data.get('magazine', 'All')
             page = data.get('page', 1)
         else:
-            query = request.args.get('q', '').lower()
+            query = request.args.get('q', '')
             magazine_filter = request.args.get('magazine', 'All')
             page = int(request.args.get('page', 1))
         

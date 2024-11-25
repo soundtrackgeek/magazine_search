@@ -80,9 +80,10 @@ A web-based application that allows you to search through magazine content effic
 ## Search Tips
 
 - Use quotes for exact phrase matches: `"computer games"`
-- Use AND/OR operators: `gaming AND reviews`
-- Use wildcards: `program*` matches programming, programs, etc.
-- Filter by magazine using the dropdown menu
+- Use AND to require both terms: `gaming AND reviews`
+- Use NOT or - to exclude terms: `ocean NOT amiga` or `ocean -amiga`
+- Combine operators: `"ocean software" AND games NOT amstrad`
+- Filter results by magazine using the dropdown menu
 
 ## Contributing
 

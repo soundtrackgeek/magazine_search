@@ -80,6 +80,48 @@ def search_magazines(query, magazine_filter="All", page=1, page_size=100):
     """
     from_idx = (page - 1) * page_size
     
+    # Parse the query to handle NOT operations
+    must_terms = []
+    must_not_terms = []
+    
+    # Split the query into terms, preserving quoted phrases
+    # First replace "NOT" with "-" for consistency
+    query = query.replace(" NOT ", " -")
+    
+    # Split by spaces but preserve quoted phrases
+    terms = []
+    current_term = []
+    in_quotes = False
+    
+    for char in query + ' ':  # Add space to handle last term
+        if char == '"':
+            in_quotes = not in_quotes
+            current_term.append(char)
+        elif char == ' ' and not in_quotes:
+            if current_term:
+                terms.append(''.join(current_term))
+                current_term = []
+        else:
+            current_term.append(char)
+    
+    # Process each term
+    for term in terms:
+        # Convert content terms to lowercase but preserve operators
+        if term in ('AND', 'OR', 'NOT'):
+            continue
+        
+        if term.startswith('-'):
+            # Remove the - and add to must_not
+            clean_term = term[1:].lower()
+            if clean_term:  # Only add if there's something after the -
+                must_not_terms.append(clean_term)
+        else:
+            # Remove quotes if present and convert to lowercase
+            clean_term = term.strip('"').lower()
+            if clean_term:
+                must_terms.append(clean_term)
+    
+    # Construct the bool query
     search_body = {
         "query": {
             "bool": {
@@ -87,7 +129,7 @@ def search_magazines(query, magazine_filter="All", page=1, page_size=100):
                     {
                         "match": {
                             "content": {
-                                "query": query,
+                                "query": " ".join(must_terms),
                                 "operator": "and"
                             }
                         }
@@ -102,10 +144,19 @@ def search_magazines(query, magazine_filter="All", page=1, page_size=100):
         }
     }
     
-    if magazine_filter != "All":
-        search_body["query"]["bool"]["filter"] = [
-            {"prefix": {"magazine_name": magazine_filter}}
+    # Add must_not clauses if there are any NOT terms
+    if must_not_terms:
+        search_body["query"]["bool"]["must_not"] = [
+            {"match": {"content": {"query": term, "operator": "and"}}} 
+            for term in must_not_terms
         ]
+    
+    if magazine_filter != "All":
+        if "filter" not in search_body["query"]["bool"]:
+            search_body["query"]["bool"]["filter"] = []
+        search_body["query"]["bool"]["filter"].append(
+            {"prefix": {"magazine_name": magazine_filter}}
+        )
     
     results = es_client.search(
         index=INDEX_NAME,
