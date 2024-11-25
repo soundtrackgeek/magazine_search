@@ -1,6 +1,6 @@
 from flask import Flask, render_template, jsonify, request, send_from_directory
-from sqlalchemy import text
 from database import SessionLocal, Magazine
+from elasticsearch_client import search_magazines
 import logging
 
 # Set up logging
@@ -36,33 +36,18 @@ def search():
         if not query:
             return jsonify({'results': []})
         
-        db = get_db()
+        # Search using Elasticsearch
+        search_results = search_magazines(query, magazine_filter)
         
-        # Build the query using full-text search
-        search_query = db.query(Magazine)
-        
-        # Apply magazine filter if not "All"
-        if magazine_filter != "All":
-            search_query = search_query.filter(Magazine.magazine_name.startswith(magazine_filter))
-        
-        # Apply full-text search
-        search_query = search_query.filter(
-            text("content_tsv @@ plainto_tsquery('english', :query)")
-        ).params(query=query)
-        
-        # Add ranking to sort by relevance
-        search_query = search_query.order_by(
-            text("ts_rank(content_tsv, plainto_tsquery('english', :query)) DESC")
-        ).params(query=query)
-        
-        # Execute query and format results
+        # Format results
         results = []
-        for item in search_query.all():
+        for hit in search_results:
+            source = hit['_source']
             results.append({
-                'magazine': item.magazine_name,
-                'page': item.page_number,
-                'content': item.content,
-                'cover_image': item.cover_image,
+                'magazine': source['magazine_name'],
+                'page': source['page_number'],
+                'content': source['content'],
+                'cover_image': source['cover_image'],
                 'search_query': query
             })
         
