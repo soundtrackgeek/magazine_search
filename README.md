@@ -22,6 +22,7 @@ A web-based application that allows you to search through magazine content effic
 - Crash
 - Dreamcast Magazine
 - Edge
+- Family Computing
 - PC Format
 - PC Gamer US
 - Zzap64
