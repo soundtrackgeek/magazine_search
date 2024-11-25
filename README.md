@@ -25,6 +25,7 @@ A web-based application that allows you to search through magazine content effic
 - Family Computing
 - GamesMaster
 - Hyper
+- Info
 - PC Format
 - PC Gamer US
 - Zzap64
