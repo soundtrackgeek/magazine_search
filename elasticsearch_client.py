@@ -28,12 +28,32 @@ es_client = Elasticsearch(
     verify_certs=False  
 )
 
+def recreate_index():
+    """Delete and recreate the magazine index"""
+    try:
+        if es_client.indices.exists(index=INDEX_NAME):
+            es_client.indices.delete(index=INDEX_NAME)
+            logger.info(f"Deleted index {INDEX_NAME}")
+        create_index()
+        logger.info("Index recreated successfully")
+        return True
+    except Exception as e:
+        logger.error(f"Error recreating index: {str(e)}")
+        return False
+
 def create_index():
     """Create the magazine index with appropriate mappings"""
     index_body = {
         "mappings": {
             "properties": {
-                "magazine_name": {"type": "keyword"},
+                "magazine_name": {
+                    "type": "keyword",
+                    "fields": {
+                        "keyword": {
+                            "type": "keyword"
+                        }
+                    }
+                },
                 "page_number": {"type": "integer"},
                 "content": {
                     "type": "text",
@@ -53,6 +73,13 @@ def create_index():
     if not es_client.indices.exists(index=INDEX_NAME):
         es_client.indices.create(index=INDEX_NAME, body=index_body)
         logger.info(f"Created index {INDEX_NAME}")
+    else:
+        # Update mapping for existing index
+        try:
+            es_client.indices.put_mapping(index=INDEX_NAME, body=index_body["mappings"])
+            logger.info(f"Updated mapping for index {INDEX_NAME}")
+        except Exception as e:
+            logger.error(f"Error updating mapping: {str(e)}")
 
 def index_document(magazine_doc):
     """Index a single magazine document"""
@@ -65,13 +92,13 @@ def index_document(magazine_doc):
     
     es_client.index(index=INDEX_NAME, body=doc)
 
-def search_magazines(query, magazine_filter="All", page=1, page_size=100):
+def search_magazines(query, magazines=["All"], page=1, page_size=100):
     """
     Search for magazines using Elasticsearch with pagination support
     
     Args:
         query (str): The search query
-        magazine_filter (str): Filter by magazine name, "All" for no filter
+        magazines (list): List of magazine names to filter by, ["All"] for no filter
         page (int): Page number (1-based)
         page_size (int): Number of results per page
         
@@ -151,12 +178,24 @@ def search_magazines(query, magazine_filter="All", page=1, page_size=100):
             for term in must_not_terms
         ]
     
-    if magazine_filter != "All":
+    # Add magazine filter if not "All"
+    if "All" not in magazines:
         if "filter" not in search_body["query"]["bool"]:
             search_body["query"]["bool"]["filter"] = []
-        search_body["query"]["bool"]["filter"].append(
-            {"prefix": {"magazine_name": magazine_filter}}
-        )
+        search_body["query"]["bool"]["filter"].append({
+            "bool": {
+                "should": [
+                    {
+                        "term": {
+                            "magazine_name.keyword": magazine
+                        }
+                    } for magazine in magazines
+                ]
+            }
+        })
+    
+    # Log the search body for debugging
+    logger.debug(f"Elasticsearch query: {search_body}")
     
     results = es_client.search(
         index=INDEX_NAME,

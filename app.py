@@ -30,18 +30,18 @@ def search():
             
             # Get the original query without converting to lowercase
             query = data.get('query', '')
-            magazine_filter = data.get('magazine', 'All')
+            magazines = data.get('magazines', ['All'])
             page = data.get('page', 1)
         else:
             query = request.args.get('q', '')
-            magazine_filter = request.args.get('magazine', 'All')
+            magazines = request.args.getlist('magazines[]') or ['All']
             page = int(request.args.get('page', 1))
         
         if not query:
             return jsonify({'results': []})
         
         # Search using Elasticsearch
-        search_response = search_magazines(query, magazine_filter, page)
+        search_response = search_magazines(query, magazines, page)
         
         # Format results
         results = []
@@ -64,7 +64,7 @@ def search():
             'page_size': search_response['page_size']
         }
         
-        logger.debug(f"Search query '{query}' with magazine filter '{magazine_filter}' returned {len(results)} results")
+        logger.debug(f"Search query '{query}' with magazine filters '{magazines}' returned {len(results)} results")
         return jsonify(response)
     
     except Exception as e:

@@ -16,56 +16,117 @@
         </svg>
         <span>Toggle Theme</span>
     </button>
-    <div class="container mx-auto px-4 py-8">
-        <h1 class="text-4xl font-bold text-center mb-8">Magazine Archive Search</h1>
-        
-        <div class="max-w-6xl mx-auto">
-            <div class="flex gap-4 mb-4">
-                <select id="magazine-filter" class="px-4 py-3 rounded-lg shadow-sm border focus:outline-none focus:ring-2">
-                    <option value="All">All Magazines</option>
-                    <option value="ACE">ACE</option>
-                    <option value="Amiga Format">Amiga Format</option>
-                    <option value="Amiga Power">Amiga Power</option>
-                    <option value="BYTE">Byte</option>
-                    <option value="Commodore User">Commodore User</option>
-                    <option value="Computer & Video Games">Computer & Video Games</option>
-                    <option value="Crash">Crash</option>
-                    <option value="Dreamcast Magazine">Dreamcast Magazine</option>
-                    <option value="Edge">Edge</option>
-                    <option value="Family Computing">Family Computing</option>
-                    <option value="GamesMaster">GamesMaster</option>
-                    <option value="Hyper">Hyper</option>
-                    <option value="Info">Info</option>
-                    <option value="PC Format">PC Format</option>
-                    <option value="PC Gamer US">PC Gamer US</option>
-                    <option value="Zzap64">Zzap64</option>
-                </select>
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <div id="sidebar" class="sidebar w-64 p-4 border-r border-gray-200">
+            <div class="mb-6">
+                <h2 class="text-lg font-semibold mb-3">Magazines</h2>
+                <div class="space-y-2" id="magazine-filters">
+                    <label class="flex items-center">
+                        <input type="checkbox" value="All" class="magazine-checkbox mr-2" checked>
+                        <span>All Magazines</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" value="ACE" class="magazine-checkbox mr-2">
+                        <span>ACE</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" value="Amiga Format" class="magazine-checkbox mr-2">
+                        <span>Amiga Format</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" value="Amiga Power" class="magazine-checkbox mr-2">
+                        <span>Amiga Power</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" value="BYTE" class="magazine-checkbox mr-2">
+                        <span>Byte</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" value="Commodore User" class="magazine-checkbox mr-2">
+                        <span>Commodore User</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" value="Computer & Video Games" class="magazine-checkbox mr-2">
+                        <span>Computer & Video Games</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" value="Crash" class="magazine-checkbox mr-2">
+                        <span>Crash</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" value="Dreamcast Magazine" class="magazine-checkbox mr-2">
+                        <span>Dreamcast Magazine</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" value="Edge" class="magazine-checkbox mr-2">
+                        <span>Edge</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" value="Family Computing" class="magazine-checkbox mr-2">
+                        <span>Family Computing</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" value="GamesMaster" class="magazine-checkbox mr-2">
+                        <span>GamesMaster</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" value="Hyper" class="magazine-checkbox mr-2">
+                        <span>Hyper</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" value="Info" class="magazine-checkbox mr-2">
+                        <span>Info</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" value="PC Format" class="magazine-checkbox mr-2">
+                        <span>PC Format</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" value="PC Gamer US" class="magazine-checkbox mr-2">
+                        <span>PC Gamer US</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" value="Zzap64" class="magazine-checkbox mr-2">
+                        <span>Zzap64</span>
+                    </label>
+                </div>
             </div>
-            <div class="relative">
-                <input type="text" 
-                       id="search-input" 
-                       class="w-full px-4 py-3 rounded-lg shadow-sm border focus:outline-none focus:ring-2"
-                       placeholder="Search magazines...">
-            </div>
+        </div>
 
-            <div id="results-count" class="mt-4 mb-2 text-sm font-medium hidden"></div>
+        <!-- Main Content -->
+        <div class="flex-1">
+            <div class="container px-4 py-8">
+                <h1 class="text-4xl font-bold text-center mb-8">Magazine Archive Search</h1>
+                
+                <div class="max-w-6xl mx-auto">
+                    <div class="relative">
+                        <input type="text" 
+                               id="search-input" 
+                               class="w-full px-4 py-3 rounded-lg shadow-sm border focus:outline-none focus:ring-2"
+                               placeholder="Search magazines...">
+                    </div>
 
-            <div id="results" class="mt-6 space-y-6"></div>
+                    <div id="results-count" class="mt-4 mb-2 text-sm font-medium hidden"></div>
 
-            <div id="pagination" class="mt-8 flex justify-center items-center space-x-4 hidden">
-                <button id="prev-page" class="px-4 py-2 rounded-lg border hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">
-                    Previous
-                </button>
-                <span id="page-info" class="text-sm">
-                    Page <span id="current-page">1</span> of <span id="total-pages">1</span>
-                </span>
-                <button id="next-page" class="px-4 py-2 rounded-lg border hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">
-                    Next
-                </button>
-            </div>
+                    <div id="results" class="mt-6 space-y-6"></div>
 
-            <div id="loading" class="hidden mt-4 text-center">
-                <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+                    <div id="pagination" class="mt-8 flex justify-center items-center space-x-4 hidden">
+                        <button id="prev-page" class="px-4 py-2 rounded-lg border hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">
+                            Previous
+                        </button>
+                        <span id="page-info" class="text-sm">
+                            Page <span id="current-page">1</span> of <span id="total-pages">1</span>
+                        </span>
+                        <button id="next-page" class="px-4 py-2 rounded-lg border hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">
+                            Next
+                        </button>
+                    </div>
+
+                    <div id="loading" class="hidden mt-4 text-center">
+                        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

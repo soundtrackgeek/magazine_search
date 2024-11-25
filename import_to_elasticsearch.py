@@ -25,8 +25,13 @@ def save_processed_files(processed):
 
 def get_documents_from_csv(file_path):
     """Generator function to create Elasticsearch documents from CSV"""
-    magazine_name = os.path.splitext(os.path.basename(file_path))[0]
-    cover_path = f'/magazine_covers/{magazine_name}.jpg'
+    full_name = os.path.splitext(os.path.basename(file_path))[0]
+    
+    # Extract just the magazine name by removing issue numbers and dates
+    # This handles patterns like "Magazine Name Issue XX" or "Magazine Name - Volume X"
+    magazine_name = full_name.split(" Issue ")[0].split(" - Volume ")[0]
+    
+    cover_path = f'/magazine_covers/{os.path.splitext(os.path.basename(file_path))[0]}.jpg'
     
     df = pd.read_csv(file_path)
     for _, row in df.iterrows():

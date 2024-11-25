@@ -30,6 +30,46 @@ body {
     border-radius: 2px;
 }
 
+/* Sidebar styles */
+.sidebar {
+    background-color: var(--bg-secondary);
+    border-color: var(--input-border);
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--input-border) var(--bg-secondary);
+}
+
+.sidebar::-webkit-scrollbar {
+    width: 8px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background-color: var(--input-border);
+    border-radius: 4px;
+}
+
+.magazine-checkbox {
+    accent-color: var(--input-focus);
+    width: 1rem;
+    height: 1rem;
+}
+
+.magazine-checkbox:hover {
+    cursor: pointer;
+}
+
+.magazine-checkbox:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .markdown-body {
     padding: 16px;
     font-size: 14px;
@@ -89,6 +129,7 @@ body {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    z-index: 50;
 }
 
 select, input {

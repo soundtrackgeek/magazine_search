@@ -80,10 +80,48 @@ const prevPageBtn = document.getElementById('prev-page');
 const nextPageBtn = document.getElementById('next-page');
 const currentPageSpan = document.getElementById('current-page');
 const totalPagesSpan = document.getElementById('total-pages');
+const magazineCheckboxes = document.querySelectorAll('.magazine-checkbox');
 
 let currentPage = 1;
 
-function performSearch(query, selectedMagazine, page = 1) {
+// Handle magazine checkbox changes
+const allMagazinesCheckbox = document.querySelector('.magazine-checkbox[value="All"]');
+const individualMagazineCheckboxes = Array.from(document.querySelectorAll('.magazine-checkbox:not([value="All"])'));
+
+allMagazinesCheckbox.addEventListener('change', function() {
+    if (this.checked) {
+        individualMagazineCheckboxes.forEach(checkbox => {
+            checkbox.checked = false;
+            checkbox.disabled = true;
+        });
+    } else {
+        individualMagazineCheckboxes.forEach(checkbox => {
+            checkbox.disabled = false;
+        });
+    }
+    const query = searchInput.value.trim();
+    performSearch(query, getSelectedMagazines());
+});
+
+individualMagazineCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+        const anyIndividualChecked = individualMagazineCheckboxes.some(cb => cb.checked);
+        if (anyIndividualChecked) {
+            allMagazinesCheckbox.checked = false;
+        }
+        const query = searchInput.value.trim();
+        performSearch(query, getSelectedMagazines());
+    });
+});
+
+function getSelectedMagazines() {
+    if (allMagazinesCheckbox.checked) {
+        return ['All'];
+    }
+    return Array.from(document.querySelectorAll('.magazine-checkbox:checked')).map(cb => cb.value);
+}
+
+function performSearch(query, selectedMagazines, page = 1) {
     // Show loading indicator
     loadingDiv.classList.remove('hidden');
     
@@ -94,7 +132,7 @@ function performSearch(query, selectedMagazine, page = 1) {
         },
         body: JSON.stringify({
             query: query,
-            magazine: selectedMagazine,
+            magazines: selectedMagazines,
             page: page
         })
     })
@@ -172,7 +210,7 @@ function performSearch(query, selectedMagazine, page = 1) {
 
 searchInput.addEventListener('input', function() {
     const query = this.value.trim();
-    const selectedMagazine = document.getElementById('magazine-filter').value;
+    const selectedMagazines = getSelectedMagazines();
     
     // Clear previous timeout
     clearTimeout(searchTimeout);
@@ -182,16 +220,8 @@ searchInput.addEventListener('input', function() {
     
     // Set new timeout
     searchTimeout = setTimeout(() => {
-        performSearch(query, selectedMagazine, currentPage);
+        performSearch(query, selectedMagazines, currentPage);
     }, 300);
-});
-
-document.getElementById('magazine-filter').addEventListener('change', function() {
-    // Reset to first page on filter change
-    currentPage = 1;
-    // Trigger search when magazine filter changes
-    const event = new Event('input');
-    searchInput.dispatchEvent(event);
 });
 
 // Pagination event listeners
@@ -199,8 +229,8 @@ prevPageBtn.addEventListener('click', () => {
     if (currentPage > 1) {
         currentPage--;
         const query = searchInput.value.trim();
-        const selectedMagazine = document.getElementById('magazine-filter').value;
-        performSearch(query, selectedMagazine, currentPage);
+        const selectedMagazines = getSelectedMagazines();
+        performSearch(query, selectedMagazines, currentPage);
     }
 });
 
@@ -209,8 +239,8 @@ nextPageBtn.addEventListener('click', () => {
     if (currentPage < totalPages) {
         currentPage++;
         const query = searchInput.value.trim();
-        const selectedMagazine = document.getElementById('magazine-filter').value;
-        performSearch(query, selectedMagazine, currentPage);
+        const selectedMagazines = getSelectedMagazines();
+        performSearch(query, selectedMagazines, currentPage);
     }
 });
 
