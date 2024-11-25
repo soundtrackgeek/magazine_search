@@ -23,6 +23,7 @@ A web-based application that allows you to search through magazine content effic
 - Dreamcast Magazine
 - Edge
 - Family Computing
+- GamesMaster
 - PC Format
 - PC Gamer US
 - Zzap64
