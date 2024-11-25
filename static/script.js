@@ -9,9 +9,53 @@ marked.setOptions({
 
 function highlightText(text, query) {
     if (!query) return text;
-    const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const regex = new RegExp(escapedQuery, 'gi');
-    return text.replace(regex, '<span class="highlight">$&</span>');
+
+    // Check if the query is wrapped in quotes
+    const isQuoted = /^".*"$/.test(query);
+    
+    if (isQuoted) {
+        // For quoted searches, highlight the exact phrase (without the quotes)
+        const phrase = query.slice(1, -1);  // Remove quotes
+        const escapedPhrase = phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(escapedPhrase, 'gi');
+        return text.replace(regex, '<span class="highlight">$&</span>');
+    } else {
+        // For regular searches, handle each term separately
+        let highlightedText = text;
+        
+        // Split the query into terms, preserving quoted phrases
+        const terms = query.match(/("[^"]+"|[^\s]+)/g) || [];
+        
+        // List of Elasticsearch operators and special syntax to ignore
+        const operatorsToIgnore = [
+            'AND', 'OR', 'NOT',  // Boolean operators
+            '+', '-',            // Required/prohibited operators
+            '(', ')',            // Grouping
+            '*', '?',            // Wildcards
+            '~', '^'             // Fuzzy and boost operators
+        ];
+
+        terms.forEach(term => {
+            // Remove quotes if the term is quoted
+            term = term.replace(/^"(.*)"$/, '$1');
+            
+            // Skip highlighting if the term is an operator
+            if (operatorsToIgnore.includes(term.toUpperCase())) {
+                return;
+            }
+
+            // Skip highlighting if the term starts with special characters
+            if (/^[+\-~^()/]/.test(term)) {
+                return;
+            }
+
+            const escapedTerm = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp(escapedTerm, 'gi');
+            highlightedText = highlightedText.replace(regex, '<span class="highlight">$&</span>');
+        });
+        
+        return highlightedText;
+    }
 }
 
 function renderMarkdownWithHighlight(markdown, query) {
