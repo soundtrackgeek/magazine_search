@@ -114,6 +114,9 @@ function performSearch(query, selectedMagazine, page = 1) {
             resultElement.innerHTML = resultContent;
             resultsDiv.appendChild(resultElement);
         });
+
+        // Scroll to top of results after loading new page
+        resultsDiv.scrollIntoView({ behavior: 'smooth' });
     })
     .catch(error => {
         console.error('Error:', error);
