@@ -59,10 +59,15 @@ A web-based application that allows you to search through magazine content effic
      ```
    - Wait for Elasticsearch to start (usually takes a few seconds)
 
-4. Configure the application:
+4. Set up environment variables:
    
-   - Copy the `.env.example` to `.env`
-   - Update the Elasticsearch connection settings in `.env` if needed
+   - Copy the `.env-example` file to `.env`:
+     ```bash
+     cp .env-example .env
+     ```
+   - Open the `.env` file and replace `your_elasticsearch_password_here` with your actual Elasticsearch password
+   - The `.env` file is ignored by git to keep your credentials secure
+   - Never commit the `.env` file to version control
 
 5. Run the application:
 

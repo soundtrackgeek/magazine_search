@@ -2,6 +2,12 @@ from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
 import logging
 import urllib3
+from dotenv import load_dotenv
+import os
+
+# Load environment variables from .env file
+load_dotenv()
+
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 logger = logging.getLogger(__name__)
@@ -18,7 +24,7 @@ es_client = Elasticsearch(
         'host': ELASTICSEARCH_HOST,
         'port': ELASTICSEARCH_PORT
     }],
-    basic_auth=("elastic", "9jtAGgaioeA0Ml0SQsoP"),  # Replace with your actual password
+    basic_auth=("elastic", os.getenv('ELASTICSEARCH_PASSWORD')),
     verify_certs=False  
 )
 
