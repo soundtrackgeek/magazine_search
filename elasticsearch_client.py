@@ -59,8 +59,21 @@ def index_document(magazine_doc):
     
     es_client.index(index=INDEX_NAME, body=doc)
 
-def search_magazines(query, magazine_filter="All"):
-    """Search for magazines using Elasticsearch"""
+def search_magazines(query, magazine_filter="All", page=1, page_size=100):
+    """
+    Search for magazines using Elasticsearch with pagination support
+    
+    Args:
+        query (str): The search query
+        magazine_filter (str): Filter by magazine name, "All" for no filter
+        page (int): Page number (1-based)
+        page_size (int): Number of results per page
+        
+    Returns:
+        dict: Contains search hits and pagination info
+    """
+    from_idx = (page - 1) * page_size
+    
     search_body = {
         "query": {
             "bool": {
@@ -91,7 +104,17 @@ def search_magazines(query, magazine_filter="All"):
     results = es_client.search(
         index=INDEX_NAME,
         body=search_body,
-        size=100  # Adjust this value based on your needs
+        size=page_size,
+        from_=from_idx
     )
     
-    return results['hits']['hits']
+    total_hits = results['hits']['total']['value']
+    total_pages = (total_hits + page_size - 1) // page_size
+    
+    return {
+        'hits': results['hits']['hits'],
+        'total_hits': total_hits,
+        'page': page,
+        'page_size': page_size,
+        'total_pages': total_pages
+    }

@@ -29,19 +29,21 @@ def search():
                 return jsonify({"error": "Invalid JSON data"}), 400
             query = data.get('query', '').lower()
             magazine_filter = data.get('magazine', 'All')
+            page = data.get('page', 1)
         else:
             query = request.args.get('q', '').lower()
             magazine_filter = request.args.get('magazine', 'All')
+            page = int(request.args.get('page', 1))
         
         if not query:
             return jsonify({'results': []})
         
         # Search using Elasticsearch
-        search_results = search_magazines(query, magazine_filter)
+        search_response = search_magazines(query, magazine_filter, page)
         
         # Format results
         results = []
-        for hit in search_results:
+        for hit in search_response['hits']:
             source = hit['_source']
             results.append({
                 'magazine': source['magazine_name'],
@@ -51,8 +53,17 @@ def search():
                 'search_query': query
             })
         
+        # Add pagination info to response
+        response = {
+            'results': results,
+            'total_hits': search_response['total_hits'],
+            'current_page': search_response['page'],
+            'total_pages': search_response['total_pages'],
+            'page_size': search_response['page_size']
+        }
+        
         logger.debug(f"Search query '{query}' with magazine filter '{magazine_filter}' returned {len(results)} results")
-        return jsonify({'results': results})
+        return jsonify(response)
     
     except Exception as e:
         logger.error(f"Search error: {str(e)}")

@@ -31,6 +31,97 @@ const searchInput = document.getElementById('search-input');
 const resultsDiv = document.getElementById('results');
 const loadingDiv = document.getElementById('loading');
 const resultsCountDiv = document.getElementById('results-count');
+const paginationDiv = document.getElementById('pagination');
+const prevPageBtn = document.getElementById('prev-page');
+const nextPageBtn = document.getElementById('next-page');
+const currentPageSpan = document.getElementById('current-page');
+const totalPagesSpan = document.getElementById('total-pages');
+
+let currentPage = 1;
+
+function performSearch(query, selectedMagazine, page = 1) {
+    // Show loading indicator
+    loadingDiv.classList.remove('hidden');
+    
+    fetch('/search', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            query: query,
+            magazine: selectedMagazine,
+            page: page
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Hide loading indicator
+        loadingDiv.classList.add('hidden');
+        
+        // Clear previous results
+        resultsDiv.innerHTML = '';
+        
+        if (data.results.length === 0) {
+            resultsDiv.innerHTML = '<p class="text-center text-gray-500">No results found</p>';
+            resultsCountDiv.classList.add('hidden');
+            paginationDiv.classList.add('hidden');
+            return;
+        }
+        
+        // Display results count and pagination info
+        resultsCountDiv.classList.remove('hidden');
+        resultsCountDiv.textContent = `Found ${data.total_hits} result${data.total_hits === 1 ? '' : 's'}`;
+        
+        // Update pagination controls
+        currentPage = data.current_page;
+        currentPageSpan.textContent = currentPage;
+        totalPagesSpan.textContent = data.total_pages;
+        
+        prevPageBtn.disabled = currentPage <= 1;
+        nextPageBtn.disabled = currentPage >= data.total_pages;
+        
+        if (data.total_pages > 1) {
+            paginationDiv.classList.remove('hidden');
+        } else {
+            paginationDiv.classList.add('hidden');
+        }
+        
+        // Display results
+        data.results.forEach(result => {
+            const resultElement = document.createElement('div');
+            resultElement.className = 'search-result';
+            
+            const resultContent = `
+                <div class="search-result-title">
+                    <h2 class="text-xl font-semibold">${result.magazine}</h2>
+                    <p class="text-sm">Page ${result.page}</p>
+                </div>
+                <div class="result-container">
+                    <div class="content-container">
+                        <div class="markdown-body">
+                            ${renderMarkdownWithHighlight(result.content, query)}
+                        </div>
+                    </div>
+                    ${result.cover_image ? `
+                        <div class="cover-image-container">
+                            <img src="${result.cover_image}" alt="Magazine Cover" class="cover-image">
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            resultElement.innerHTML = resultContent;
+            resultsDiv.appendChild(resultElement);
+        });
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        loadingDiv.classList.add('hidden');
+        resultsDiv.innerHTML = '<p class="text-center text-red-500">An error occurred while searching</p>';
+        paginationDiv.classList.add('hidden');
+    });
+}
 
 searchInput.addEventListener('input', function() {
     const query = this.value.trim();
@@ -39,79 +130,41 @@ searchInput.addEventListener('input', function() {
     // Clear previous timeout
     clearTimeout(searchTimeout);
     
-    // Show loading indicator
-    loadingDiv.classList.remove('hidden');
+    // Reset to first page on new search
+    currentPage = 1;
     
     // Set new timeout
     searchTimeout = setTimeout(() => {
-        fetch('/search', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                query: query,
-                magazine: selectedMagazine
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Hide loading indicator
-            loadingDiv.classList.add('hidden');
-            
-            // Clear previous results
-            resultsDiv.innerHTML = '';
-            
-            if (data.results.length === 0) {
-                resultsDiv.innerHTML = '<p class="text-center text-gray-500">No results found</p>';
-                resultsCountDiv.classList.add('hidden');
-                return;
-            }
-            
-            // Display results count
-            resultsCountDiv.classList.remove('hidden');
-            resultsCountDiv.textContent = `Found ${data.results.length} result${data.results.length === 1 ? '' : 's'}`;
-            
-            // Display results
-            data.results.forEach(result => {
-                const resultElement = document.createElement('div');
-                resultElement.className = 'search-result';
-                
-                const resultContent = `
-                    <div class="search-result-title">
-                        <h2 class="text-xl font-semibold">${result.magazine}</h2>
-                        <p class="text-sm">Page ${result.page}</p>
-                    </div>
-                    <div class="result-container">
-                        <div class="content-container">
-                            <div class="markdown-body">
-                                ${renderMarkdownWithHighlight(result.content, query)}
-                            </div>
-                        </div>
-                        ${result.cover_image ? `
-                            <div class="cover-image-container">
-                                <img src="${result.cover_image}" alt="Magazine Cover" class="cover-image">
-                            </div>
-                        ` : ''}
-                    </div>
-                `;
-                
-                resultElement.innerHTML = resultContent;
-                resultsDiv.appendChild(resultElement);
-            });
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            loadingDiv.classList.add('hidden');
-            resultsDiv.innerHTML = '<p class="text-center text-red-500">An error occurred while searching</p>';
-        });
+        performSearch(query, selectedMagazine, currentPage);
     }, 300);
 });
 
 document.getElementById('magazine-filter').addEventListener('change', function() {
+    // Reset to first page on filter change
+    currentPage = 1;
     // Trigger search when magazine filter changes
     const event = new Event('input');
     searchInput.dispatchEvent(event);
+});
+
+// Pagination event listeners
+prevPageBtn.addEventListener('click', () => {
+    if (currentPage > 1) {
+        currentPage--;
+        const query = searchInput.value.trim();
+        const selectedMagazine = document.getElementById('magazine-filter').value;
+        performSearch(query, selectedMagazine, currentPage);
+    }
+});
+
+nextPageBtn.addEventListener('click', () => {
+    const totalPages = parseInt(totalPagesSpan.textContent);
+    if (currentPage < totalPages) {
+        currentPage++;
+        const query = searchInput.value.trim();
+        const selectedMagazine = document.getElementById('magazine-filter').value;
+        performSearch(query, selectedMagazine, currentPage);
+    }
 });
 
 // Theme handling
