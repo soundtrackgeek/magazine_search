@@ -26,6 +26,7 @@ A web-based application that allows you to search through magazine content effic
 - GamesMaster
 - Hyper
 - Info
+- Kilobaud Microcomputing
 - PC Format
 - PC Gamer US
 - Zzap64
@@ -52,7 +53,7 @@ A web-based application that allows you to search through magazine content effic
    ```
 
 3. Install and Start Elasticsearch:
-   
+
    - Download Elasticsearch 8.x from the [official website](https://www.elastic.co/downloads/elasticsearch)
    - Extract the downloaded file
    - Start Elasticsearch:
@@ -62,7 +63,7 @@ A web-based application that allows you to search through magazine content effic
    - Wait for Elasticsearch to start (usually takes a few seconds)
 
 4. Set up environment variables:
-   
+
    - Copy the `.env-example` file to `.env`:
      ```bash
      cp .env-example .env
