@@ -176,7 +176,11 @@ function performSearch(query, selectedMagazines, page = 1) {
             
             const resultContent = `
                 <div class="search-result-title">
-                    <h2 class="text-xl font-semibold">${result.magazine}</h2>
+                    <h2 class="text-xl font-semibold">
+                        ${result.magazine}
+                        ${result.issue ? `<span class="text-lg">${result.issue}</span>` : ''}
+                        ${result.date ? `<span class="text-lg">(${result.date})</span>` : ''}
+                    </h2>
                     <p class="text-sm">Page ${result.page}</p>
                 </div>
                 <div class="result-container">

@@ -54,6 +54,12 @@ def create_index():
                         }
                     }
                 },
+                "issue_number": {
+                    "type": "keyword"
+                },
+                "publication_date": {
+                    "type": "keyword"
+                },
                 "page_number": {"type": "integer"},
                 "content": {
                     "type": "text",
@@ -85,6 +91,8 @@ def index_document(magazine_doc):
     """Index a single magazine document"""
     doc = {
         'magazine_name': magazine_doc.magazine_name,
+        'issue_number': magazine_doc.issue_number,
+        'publication_date': magazine_doc.publication_date,
         'page_number': magazine_doc.page_number,
         'content': magazine_doc.content,
         'cover_image': magazine_doc.cover_image

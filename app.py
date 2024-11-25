@@ -1,5 +1,4 @@
 from flask import Flask, render_template, jsonify, request, send_from_directory
-from database import SessionLocal, Magazine
 from elasticsearch_client import search_magazines
 import logging
 
@@ -49,6 +48,8 @@ def search():
             source = hit['_source']
             results.append({
                 'magazine': source['magazine_name'],
+                'issue': source.get('issue_number', ''),
+                'date': source.get('publication_date', ''),
                 'page': source['page_number'],
                 'content': source['content'],
                 'cover_image': source['cover_image'],

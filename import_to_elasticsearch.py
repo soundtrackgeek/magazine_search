@@ -5,6 +5,7 @@ import logging
 from elasticsearch_client import es_client, create_index, INDEX_NAME
 from elasticsearch.helpers import bulk
 import json
+import re
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -27,9 +28,28 @@ def get_documents_from_csv(file_path):
     """Generator function to create Elasticsearch documents from CSV"""
     full_name = os.path.splitext(os.path.basename(file_path))[0]
     
-    # Extract just the magazine name by removing issue numbers and dates
-    # This handles patterns like "Magazine Name Issue XX" or "Magazine Name - Volume X"
-    magazine_name = full_name.split(" Issue ")[0].split(" - Volume ")[0]
+    # Parse magazine name, issue number, and date from filename
+    # Example formats: "Magazine Name Issue XX" or "Magazine Name - Volume X"
+    parts = full_name.split(" Issue ")
+    if len(parts) > 1:
+        magazine_name = parts[0]
+        issue_number = f"Issue {parts[1]}"
+    else:
+        parts = full_name.split(" - Volume ")
+        if len(parts) > 1:
+            magazine_name = parts[0]
+            issue_number = f"Volume {parts[1]}"
+        else:
+            magazine_name = full_name
+            issue_number = ""
+    
+    # Extract date if present (assuming it's in parentheses at the end)
+    date_match = re.search(r'\((.*?)\)$', magazine_name)
+    if date_match:
+        publication_date = date_match.group(1)
+        magazine_name = magazine_name.replace(f"({publication_date})", "").strip()
+    else:
+        publication_date = ""
     
     cover_path = f'/magazine_covers/{os.path.splitext(os.path.basename(file_path))[0]}.jpg'
     
@@ -39,6 +59,8 @@ def get_documents_from_csv(file_path):
             "_index": INDEX_NAME,
             "_source": {
                 "magazine_name": magazine_name,
+                "issue_number": issue_number,
+                "publication_date": publication_date,
                 "page_number": row['Page Number'],
                 "content": row['Page Information'],
                 "cover_image": cover_path
