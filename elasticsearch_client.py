@@ -190,20 +190,50 @@ def search_magazines(query, magazines=["All"], page=1, page_size=100):
     if "All" not in magazines:
         if "filter" not in search_body["query"]["bool"]:
             search_body["query"]["bool"]["filter"] = []
-        search_body["query"]["bool"]["filter"].append({
+        
+        # Log magazine names being filtered
+        logger.debug(f"Filtering for magazines: {magazines}")
+        
+        magazine_filter = {
             "bool": {
                 "should": [
                     {
-                        "term": {
-                            "magazine_name.keyword": magazine
+                        "prefix": {
+                            "magazine_name": magazine
                         }
                     } for magazine in magazines
                 ]
             }
-        })
+        }
+        search_body["query"]["bool"]["filter"].append(magazine_filter)
+        
+        # Log the magazine filter
+        logger.debug(f"Magazine filter: {magazine_filter}")
     
     # Log the search body for debugging
     logger.debug(f"Elasticsearch query: {search_body}")
+    
+    # First, let's check what magazine names exist in the index
+    sample_query = {
+        "size": 0,
+        "aggs": {
+            "magazine_names": {
+                "terms": {
+                    "field": "magazine_name",
+                    "size": 100
+                }
+            }
+        }
+    }
+    
+    sample_results = es_client.search(
+        index=INDEX_NAME,
+        body=sample_query
+    )
+    
+    logger.debug("Available magazine names in index:")
+    for bucket in sample_results['aggregations']['magazine_names']['buckets']:
+        logger.debug(f"- {bucket['key']} ({bucket['doc_count']} documents)")
     
     results = es_client.search(
         index=INDEX_NAME,
