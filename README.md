@@ -39,6 +39,7 @@ A web-based application that allows you to search through magazine content effic
 - The One
 - Ultimate Future Games
 - VIC Computing
+- X360 Magazine
 - Zzap64
 
 ## Prerequisites
