@@ -11,8 +11,14 @@ import re
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+def get_file_hash(file_path):
+    """Calculate a hash of the file's content"""
+    import hashlib
+    with open(file_path, 'rb') as f:
+        return hashlib.md5(f.read()).hexdigest()
+
 def get_processed_files():
-    """Get list of already processed files and their last modified times"""
+    """Get list of already processed files and their last modified times and content hashes"""
     processed_file = "processed_files.json"
     if os.path.exists(processed_file):
         with open(processed_file, 'r') as f:
@@ -90,29 +96,55 @@ def import_magazines(force_reimport=False):
     
     for file in csv_files:
         try:
-            # Check if file has been modified since last import
-            last_modified = os.path.getmtime(file)
-            if not force_reimport and file in processed_files and processed_files[file] >= last_modified:
-                logger.info(f"Skipping {file} - already processed")
+            # Verify file exists and is readable
+            if not os.path.isfile(file):
+                logger.error(f"File not found: {file}")
                 continue
+
+            # Check both modification time and content hash
+            last_modified = os.path.getmtime(file)
+            current_hash = get_file_hash(file)
             
-            logger.info(f"Processing {file}")
+            if not force_reimport and file in processed_files:
+                stored_info = processed_files[file]
+                if isinstance(stored_info, (int, float)):
+                    # Handle old format where only timestamp was stored
+                    needs_update = stored_info < last_modified
+                else:
+                    # Check both timestamp and content hash
+                    needs_update = (stored_info['modified'] < last_modified or 
+                                  stored_info['hash'] != current_hash)
+                
+                if not needs_update:
+                    logger.info(f"Skipping {file} - no changes detected")
+                    continue
+            
+            logger.info(f"Processing {file} (last modified: {last_modified})")
             
             # Delete existing documents for this magazine if any
-            magazine_name = os.path.splitext(os.path.basename(file))[0]
-            es_client.delete_by_query(index=INDEX_NAME, body={
+            magazine_name = os.path.splitext(os.path.basename(file))[0].split(" Issue ")[0].split(" - Volume ")[0]
+            delete_response = es_client.delete_by_query(index=INDEX_NAME, body={
                 "query": {
-                    "term": {"magazine_name": magazine_name}
+                    "term": {"magazine_name.keyword": magazine_name}
                 }
             })
+            logger.info(f"Deleted {delete_response.get('deleted', 0)} existing documents for {magazine_name}")
             
             # Bulk index the documents
             success, failed = bulk(es_client, get_documents_from_csv(file))
-            logger.info(f"Indexed {success} documents. Failed: {failed}")
+            failed_count = len(failed) if isinstance(failed, list) else failed
+            logger.info(f"Indexed {success} documents. Failed: {failed_count}")
             
-            # Update processed files list
-            processed_files[file] = last_modified
-            save_processed_files(processed_files)
+            if failed_count == 0:
+                # Store both modification time and content hash
+                processed_files[file] = {
+                    'modified': last_modified,
+                    'hash': current_hash
+                }
+                save_processed_files(processed_files)
+                logger.info(f"Successfully processed {file} and updated tracking")
+            else:
+                logger.warning(f"Some documents failed to index for {file}, not updating processed files record")
             
         except Exception as e:
             logger.error(f"Error processing {file}: {str(e)}")
