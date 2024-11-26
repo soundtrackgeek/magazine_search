@@ -33,6 +33,7 @@ A web-based application that allows you to search through magazine content effic
 - PC Format
 - PC Gamer US
 - RAZE
+- Sinclair User
 - Zzap64
 
 ## Prerequisites
