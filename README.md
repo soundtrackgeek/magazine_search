@@ -37,6 +37,7 @@ A web-based application that allows you to search through magazine content effic
 - RAZE
 - Sinclair User
 - The One
+- Ultimate Future Games
 - Zzap64
 
 ## Prerequisites
