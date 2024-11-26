@@ -34,6 +34,7 @@ A web-based application that allows you to search through magazine content effic
 - PC Gamer US
 - RAZE
 - Sinclair User
+- The One
 - Zzap64
 
 ## Prerequisites
