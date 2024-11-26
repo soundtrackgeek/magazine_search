@@ -32,6 +32,7 @@ A web-based application that allows you to search through magazine content effic
 - Official Xbox UK
 - PC Format
 - PC Gamer US
+- RAZE
 - Zzap64
 
 ## Prerequisites
