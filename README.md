@@ -28,6 +28,7 @@ A web-based application that allows you to search through magazine content effic
 - Info
 - Kilobaud Microcomputing
 - Laserbug
+- MacFormat
 - PC Format
 - PC Gamer US
 - Zzap64
