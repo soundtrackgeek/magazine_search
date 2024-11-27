@@ -61,8 +61,12 @@ def get_documents_from_csv(file_path):
     
     df = pd.read_csv(file_path)
     for _, row in df.iterrows():
+        # Create a unique ID by combining magazine name, issue number, and page number
+        doc_id = f"{magazine_name}_{issue_number}_{row['Page Number']}".replace(" ", "_").lower()
+        
         yield {
             "_index": INDEX_NAME,
+            "_id": doc_id,
             "_source": {
                 "magazine_name": magazine_name,
                 "issue_number": issue_number,
@@ -121,17 +125,32 @@ def import_magazines(force_reimport=False):
             
             logger.info(f"Processing {file} (last modified: {last_modified})")
             
-            # Delete existing documents for this magazine if any
-            magazine_name = os.path.splitext(os.path.basename(file))[0].split(" Issue ")[0].split(" - Volume ")[0]
-            delete_response = es_client.delete_by_query(index=INDEX_NAME, body={
-                "query": {
-                    "term": {"magazine_name.keyword": magazine_name}
-                }
-            })
-            logger.info(f"Deleted {delete_response.get('deleted', 0)} existing documents for {magazine_name}")
+            # Delete existing documents for this specific magazine issue
+            full_name = os.path.splitext(os.path.basename(file))[0]
+            magazine_name = full_name.split(" Issue ")[0].split(" - Volume ")[0]
+            delete_response = es_client.delete_by_query(
+                index=INDEX_NAME,
+                body={
+                    "query": {
+                        "bool": {
+                            "must": [
+                                {"term": {"magazine_name.keyword": magazine_name}},
+                                {"term": {"issue_number.keyword": full_name.split(magazine_name)[1].strip()}}
+                            ]
+                        }
+                    }
+                },
+                conflicts="proceed"  # Continue even if there are version conflicts
+            )
+            logger.info(f"Deleted {delete_response.get('deleted', 0)} existing documents for {full_name}")
             
             # Bulk index the documents
-            success, failed = bulk(es_client, get_documents_from_csv(file))
+            success, failed = bulk(
+                es_client,
+                get_documents_from_csv(file),
+                raise_on_error=False,  # Don't raise on document-level errors
+                raise_on_exception=True  # Still raise on connection errors etc
+            )
             failed_count = len(failed) if isinstance(failed, list) else failed
             logger.info(f"Indexed {success} documents. Failed: {failed_count}")
             
