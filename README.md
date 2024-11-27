@@ -42,6 +42,24 @@ A web-based application that allows you to search through magazine content effic
 - X360 Magazine
 - Zzap64
 
+## Data Setup
+
+### Magazine Data
+1. Add your magazine data in CSV format to the `magazines` folder. Each CSV file should contain the magazine content with appropriate fields.
+
+### Magazine Covers
+1. Place your magazine cover images in the `magazine_covers` folder. The images should match the magazine entries in your CSV files.
+
+### Importing Data to Elasticsearch
+1. Use the import script to load your magazine data into Elasticsearch:
+   ```bash
+   python import_to_elasticsearch.py
+   ```
+2. To force a complete reimport of all data (this will delete existing data first):
+   ```bash
+   python import_to_elasticsearch.py --force-reimport
+   ```
+
 ## Prerequisites
 
 - Python 3.8 or higher
