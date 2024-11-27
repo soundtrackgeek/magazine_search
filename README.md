@@ -40,6 +40,7 @@ A web-based application that allows you to search through magazine content effic
 - Ultimate Future Games
 - VIC Computing
 - X360 Magazine
+- Your Computer
 - Zzap64
 
 ## Data Setup
