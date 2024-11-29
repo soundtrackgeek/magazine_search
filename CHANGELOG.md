@@ -4,7 +4,21 @@ All notable changes to the Magazine Search project will be documented in this fi
 
 ## [Latest]
 
+### 2024-11-29
+- Added CU Amiga magazine
+
+### 2024-11-27
+- Added Your Computer magazine
+- Updated readme with import instructions
+- Fixed bug in import script
+
 ### 2024-11-26
+- Added X360 Magazine
+- Fixed filter issue with magazines having volumes instead of issue numbers
+- Renamed VIC Computing to Vic Computing for filter compatibility
+- Added Vic Computing magazine
+- Added Ultimate Future Games magazine
+- Fixed magazine import to detect CSV file changes
 - Added boolean operators (AND, NOT) to search functionality
 - Added pagination to search results with smooth scrolling
 - Added GamesMaster magazine
