@@ -21,6 +21,7 @@ A web-based application that allows you to search through magazine content effic
 - COMPUTE!'s Gazette
 - Computer & Video Games
 - Crash
+- CU Amiga
 - Dreamcast Magazine
 - Edge
 - Family Computing
