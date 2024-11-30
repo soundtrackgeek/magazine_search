@@ -20,12 +20,15 @@ INDEX_NAME = "magazines"
 # Initialize Elasticsearch client
 es_client = Elasticsearch(
     hosts=[{
-        'scheme': 'https',  
+        'scheme': 'http',  
         'host': ELASTICSEARCH_HOST,
         'port': ELASTICSEARCH_PORT
     }],
     basic_auth=("elastic", os.getenv('ELASTICSEARCH_PASSWORD')),
-    verify_certs=False  
+    verify_certs=False,
+    retry_on_timeout=True,
+    max_retries=5,
+    request_timeout=300
 )
 
 def recreate_index():
@@ -76,16 +79,27 @@ def create_index():
         }
     }
     
-    if not es_client.indices.exists(index=INDEX_NAME):
+    try:
+        # First ensure the index is deleted if it exists
+        if es_client.indices.exists(index=INDEX_NAME):
+            es_client.indices.delete(index=INDEX_NAME)
+            logger.info(f"Deleted existing index {INDEX_NAME}")
+        
+        # Wait a short moment to ensure deletion is complete
+        import time
+        time.sleep(2)
+        
+        # Create the new index
         es_client.indices.create(index=INDEX_NAME, body=index_body)
         logger.info(f"Created index {INDEX_NAME}")
-    else:
-        # Update mapping for existing index
-        try:
-            es_client.indices.put_mapping(index=INDEX_NAME, body=index_body["mappings"])
-            logger.info(f"Updated mapping for index {INDEX_NAME}")
-        except Exception as e:
-            logger.error(f"Error updating mapping: {str(e)}")
+        
+        # Verify the index was created
+        if not es_client.indices.exists(index=INDEX_NAME):
+            raise Exception("Index creation failed - index does not exist after creation")
+            
+    except Exception as e:
+        logger.error(f"Error during index creation: {str(e)}")
+        raise
 
 def index_document(magazine_doc):
     """Index a single magazine document"""

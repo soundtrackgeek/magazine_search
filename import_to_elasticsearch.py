@@ -100,73 +100,50 @@ def import_magazines(force_reimport=False):
     
     for file in csv_files:
         try:
-            # Verify file exists and is readable
-            if not os.path.isfile(file):
-                logger.error(f"File not found: {file}")
-                continue
-
-            # Check both modification time and content hash
             last_modified = os.path.getmtime(file)
-            current_hash = get_file_hash(file)
-            
-            if not force_reimport and file in processed_files:
-                stored_info = processed_files[file]
-                if isinstance(stored_info, (int, float)):
-                    # Handle old format where only timestamp was stored
-                    needs_update = stored_info < last_modified
-                else:
-                    # Check both timestamp and content hash
-                    needs_update = (stored_info['modified'] < last_modified or 
-                                  stored_info['hash'] != current_hash)
-                
-                if not needs_update:
-                    logger.info(f"Skipping {file} - no changes detected")
-                    continue
-            
             logger.info(f"Processing {file} (last modified: {last_modified})")
             
-            # Delete existing documents for this specific magazine issue
-            full_name = os.path.splitext(os.path.basename(file))[0]
-            magazine_name = full_name.split(" Issue ")[0].split(" - Volume ")[0]
-            delete_response = es_client.delete_by_query(
-                index=INDEX_NAME,
-                body={
-                    "query": {
-                        "bool": {
-                            "must": [
-                                {"term": {"magazine_name.keyword": magazine_name}},
-                                {"term": {"issue_number.keyword": full_name.split(magazine_name)[1].strip()}}
-                            ]
-                        }
+            # Skip if file hasn't changed since last processing
+            if not force_reimport and file in processed_files and processed_files[file]["last_modified"] == last_modified:
+                continue
+                
+            # Delete existing documents for this magazine
+            magazine_name = os.path.splitext(os.path.basename(file))[0]
+            query = {
+                "query": {
+                    "match_phrase": {
+                        "magazine_name": magazine_name
                     }
-                },
-                conflicts="proceed"  # Continue even if there are version conflicts
-            )
-            logger.info(f"Deleted {delete_response.get('deleted', 0)} existing documents for {full_name}")
-            
-            # Bulk index the documents
-            success, failed = bulk(
-                es_client,
-                get_documents_from_csv(file),
-                raise_on_error=False,  # Don't raise on document-level errors
-                raise_on_exception=True  # Still raise on connection errors etc
-            )
-            failed_count = len(failed) if isinstance(failed, list) else failed
-            logger.info(f"Indexed {success} documents. Failed: {failed_count}")
-            
-            if failed_count == 0:
-                # Store both modification time and content hash
-                processed_files[file] = {
-                    'modified': last_modified,
-                    'hash': current_hash
                 }
-                save_processed_files(processed_files)
-                logger.info(f"Successfully processed {file} and updated tracking")
-            else:
-                logger.warning(f"Some documents failed to index for {file}, not updating processed files record")
+            }
+            try:
+                es_client.delete_by_query(index=INDEX_NAME, body=query, conflicts="proceed", wait_for_completion=False)
+            except Exception as e:
+                logger.warning(f"Error deleting existing documents for {magazine_name}: {str(e)}")
+            
+            # Process documents in batches
+            documents = list(get_documents_from_csv(file))
+            batch_size = 100  # Process 100 documents at a time
+            
+            for i in range(0, len(documents), batch_size):
+                batch = documents[i:i + batch_size]
+                try:
+                    success, failed = bulk(es_client, batch, raise_on_error=False)
+                    logger.info(f"Indexed {success} documents, {failed} failed for batch {i//batch_size + 1}")
+                except Exception as e:
+                    logger.error(f"Error indexing batch {i//batch_size + 1}: {str(e)}")
+                    continue
+            
+            # Record successful processing
+            processed_files[file] = {
+                "last_modified": last_modified,
+                "hash": get_file_hash(file)
+            }
+            save_processed_files(processed_files)
             
         except Exception as e:
             logger.error(f"Error processing {file}: {str(e)}")
+            continue
 
 if __name__ == '__main__':
     import argparse
