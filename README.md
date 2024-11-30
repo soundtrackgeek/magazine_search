@@ -14,6 +14,7 @@ A web-based application that allows you to search through magazine content effic
 ## Magazines
 
 - ACE
+- Amiga Action
 - Amiga Format
 - Amiga Power
 - Byte
