@@ -4,6 +4,11 @@ All notable changes to the Magazine Search project will be documented in this fi
 
 ## [Latest]
 
+### 2024-11-30
+- Added Amiga Computing magazine
+- Fixed bug with --force-reimport option
+- Added Amiga Action magazine
+
 ### 2024-11-29
 - Added CU Amiga magazine
 
