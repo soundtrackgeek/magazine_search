@@ -15,6 +15,7 @@ A web-based application that allows you to search through magazine content effic
 
 - ACE
 - Amiga Action
+- Amiga Computing
 - Amiga Format
 - Amiga Power
 - Byte
