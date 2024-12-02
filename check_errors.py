@@ -33,15 +33,16 @@ def find_errors_in_magazines():
                 
                 try:
                     with open(file_path, 'r', encoding='utf-8') as f:
-                        content = f.readlines()
-                        
-                    # Check each line for errors
-                    for line_num, line in enumerate(content, 1):
-                        for pattern in compiled_patterns:
-                            match = pattern.search(line)
-                            if match:
-                                error_msg = match.group(0)
-                                results.append([magazine_name, line_num, error_msg])
+                        csv_reader = csv.DictReader(f)
+                        for row in csv_reader:
+                            page_number = row.get('Page Number', '')
+                            # Check each field in the row for errors
+                            row_text = str(row)
+                            for pattern in compiled_patterns:
+                                match = pattern.search(row_text)
+                                if match:
+                                    error_msg = match.group(0)
+                                    results.append([magazine_name, page_number, error_msg])
                                 
                 except Exception as e:
                     print(f"Error processing {file}: {str(e)}")

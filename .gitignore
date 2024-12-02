@@ -1,4 +1,5 @@
 *.csv
+#!magazine_errors.csv
 .env
 *.jpg
 *.json
