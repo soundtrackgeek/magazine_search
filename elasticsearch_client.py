@@ -45,7 +45,7 @@ def recreate_index():
         return False
 
 def create_index():
-    """Create the magazine index with appropriate mappings"""
+    """Create the magazine index with appropriate mappings if it doesn't exist"""
     index_body = {
         "mappings": {
             "properties": {
@@ -80,26 +80,15 @@ def create_index():
     }
     
     try:
-        # First ensure the index is deleted if it exists
-        if es_client.indices.exists(index=INDEX_NAME):
-            es_client.indices.delete(index=INDEX_NAME)
-            logger.info(f"Deleted existing index {INDEX_NAME}")
-        
-        # Wait a short moment to ensure deletion is complete
-        import time
-        time.sleep(2)
-        
-        # Create the new index
-        es_client.indices.create(index=INDEX_NAME, body=index_body)
-        logger.info(f"Created index {INDEX_NAME}")
-        
-        # Verify the index was created
+        # Only create the index if it doesn't exist
         if not es_client.indices.exists(index=INDEX_NAME):
-            raise Exception("Index creation failed - index does not exist after creation")
+            es_client.indices.create(index=INDEX_NAME, body=index_body)
+            logger.info(f"Created new index {INDEX_NAME}")
+        else:
+            logger.info(f"Index {INDEX_NAME} already exists")
             
     except Exception as e:
         logger.error(f"Error during index creation: {str(e)}")
-        raise
 
 def index_document(magazine_doc):
     """Index a single magazine document"""

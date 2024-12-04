@@ -87,8 +87,9 @@ def import_magazines(force_reimport=False):
         logger.info("Dropping existing index for complete reimport")
         if es_client.indices.exists(index=INDEX_NAME):
             es_client.indices.delete(index=INDEX_NAME)
+            logger.info(f"Deleted index {INDEX_NAME}")
     
-    # Create index if it doesn't exist
+    # Create index if it doesn't exist (will not delete existing index)
     create_index()
     
     # Get list of processed files
@@ -101,25 +102,15 @@ def import_magazines(force_reimport=False):
     for file in csv_files:
         try:
             last_modified = os.path.getmtime(file)
-            logger.info(f"Processing {file} (last modified: {last_modified})")
+            file_hash = get_file_hash(file)
             
             # Skip if file hasn't changed since last processing
-            if not force_reimport and file in processed_files and processed_files[file]["last_modified"] == last_modified:
-                continue
+            if not force_reimport and file in processed_files:
+                if processed_files[file]["last_modified"] == last_modified and processed_files[file]["hash"] == file_hash:
+                    logger.info(f"Skipping {file} - no changes detected")
+                    continue
                 
-            # Delete existing documents for this magazine
-            magazine_name = os.path.splitext(os.path.basename(file))[0]
-            query = {
-                "query": {
-                    "match_phrase": {
-                        "magazine_name": magazine_name
-                    }
-                }
-            }
-            try:
-                es_client.delete_by_query(index=INDEX_NAME, body=query, conflicts="proceed", wait_for_completion=False)
-            except Exception as e:
-                logger.warning(f"Error deleting existing documents for {magazine_name}: {str(e)}")
+            logger.info(f"Processing {file} (last modified: {last_modified})")
             
             # Process documents in batches
             documents = list(get_documents_from_csv(file))
@@ -128,6 +119,7 @@ def import_magazines(force_reimport=False):
             for i in range(0, len(documents), batch_size):
                 batch = documents[i:i + batch_size]
                 try:
+                    # Use index operation which will update existing documents and add new ones
                     success, failed = bulk(es_client, batch, raise_on_error=False)
                     logger.info(f"Indexed {success} documents, {failed} failed for batch {i//batch_size + 1}")
                 except Exception as e:
@@ -137,7 +129,7 @@ def import_magazines(force_reimport=False):
             # Record successful processing
             processed_files[file] = {
                 "last_modified": last_modified,
-                "hash": get_file_hash(file)
+                "hash": file_hash
             }
             save_processed_files(processed_files)
             
