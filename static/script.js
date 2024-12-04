@@ -81,6 +81,8 @@ const nextPageBtn = document.getElementById('next-page');
 const currentPageSpan = document.getElementById('current-page');
 const totalPagesSpan = document.getElementById('total-pages');
 const magazineCheckboxes = document.querySelectorAll('.magazine-checkbox');
+const magazineFilter = document.getElementById('magazine-filter');
+const magazineLabels = document.querySelectorAll('#magazine-filters label:not(:first-child)');
 
 let currentPage = 1;
 
@@ -246,6 +248,23 @@ nextPageBtn.addEventListener('click', () => {
         const selectedMagazines = getSelectedMagazines();
         performSearch(query, selectedMagazines, currentPage);
     }
+});
+
+// Magazine filter functionality
+function filterMagazines(query) {
+    query = query.toLowerCase();
+    magazineLabels.forEach(label => {
+        const magazineName = label.querySelector('span').textContent.toLowerCase();
+        if (magazineName.includes(query)) {
+            label.style.display = '';
+        } else {
+            label.style.display = 'none';
+        }
+    });
+}
+
+magazineFilter.addEventListener('input', (e) => {
+    filterMagazines(e.target.value);
 });
 
 // Theme handling

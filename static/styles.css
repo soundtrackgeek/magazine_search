@@ -172,3 +172,34 @@ select:focus, input:focus {
     color: var(--text-primary);
     opacity: 0.8;
 }
+
+/* Magazine list container */
+.magazine-list {
+    max-height: 400px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--input-border) var(--bg-secondary);
+}
+
+.magazine-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.magazine-list::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+}
+
+.magazine-list::-webkit-scrollbar-thumb {
+    background-color: var(--input-border);
+    border-radius: 3px;
+}
+
+#magazine-filter {
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+    border-color: var(--input-border);
+}
+
+#magazine-filter:focus {
+    border-color: var(--input-focus);
+}
